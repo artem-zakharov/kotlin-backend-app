@@ -2,11 +2,14 @@ plugins {
     id 'org.jetbrains.kotlin.jvm' version '1.7.0'
 }
 
-group 'com.azakharov.employeeapp.repository.jpa'
+group 'com.azakharov.employeeapp.repository.jdbc'
 version '1.0.0'
 
 dependencies {
-    implementation group: 'javax.persistence', name: 'javax.persistence-api', version: '2.2'
+    implementation project(':repositories:jpa')
+
+    implementation group: 'com.zaxxer', name: 'HikariCP', version: '5.0.1'
+
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
 }
 
