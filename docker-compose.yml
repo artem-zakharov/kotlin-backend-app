@@ -1,0 +1,35 @@
+version: '3.7'
+
+services:
+
+  postgres-employee-app:
+    image: postgres:11.4-alpine
+    hostname: postgres-employee-app
+    env_file:
+      - .env
+    shm_size: '100'
+    command: >
+      postgres
+      -c shared_preload_libraries='pg_stat_statements'
+      -c pg_stat_statements.track=all
+      -c max_connections=200
+      -c shared_buffers=10MB
+      -c statement_timeout=180000
+    tmpfs:
+      - /tmp:size=10M
+    volumes:
+      - db-data:/var/lib/postgresql/data
+      - type: tmpfs
+        target: /dev/shm
+    ports:
+      - 5457:5432
+    networks:
+      - employee-app-network
+
+volumes:
+  db-data:
+    driver: local
+
+networks:
+  employee-app-network:
+    driver: bridge
