@@ -1,6 +1,6 @@
 rootProject.name = 'kotlin-backend-app'
 
-include 'repositories', 'repositories:jpa', ':repositories:jdbc'
+include 'repositories', 'repositories:jpa', ':repositories:jdbc', 'services'
 
 findProject(':repositories:jpa')?.name = 'jpa'
 findProject(':repositories:jdbc')?.name = 'jdbc'

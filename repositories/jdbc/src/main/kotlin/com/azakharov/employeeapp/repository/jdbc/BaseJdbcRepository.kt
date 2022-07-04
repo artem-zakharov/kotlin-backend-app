@@ -21,7 +21,7 @@ abstract class BaseJdbcRepository<E: Any, ID: Any> (protected val dataSource: Da
         private val LOGGER: Logger = LoggerFactory.getLogger(BaseJdbcRepository::class.java)
     }
 
-    protected open fun find(sql: String, id: ID): Optional<E> = processSql(sql, resultSetActionForFind(), listOf(id))
+    protected open fun find(sql: String, id: ID): E? = processSql(sql, resultSetActionForFind(), listOf(id))
 
     protected open fun findAll(sql: String): List<E> {
         val entities: MutableList<E> = mutableListOf()
@@ -34,7 +34,7 @@ abstract class BaseJdbcRepository<E: Any, ID: Any> (protected val dataSource: Da
         return processSql(sql,
                           resultSetActionForSave(entity),
                           convertEntityToParams(entity),
-                          Statement.RETURN_GENERATED_KEYS).orElseThrow()
+                          Statement.RETURN_GENERATED_KEYS)?: throw JdbcRepositoryException("Saved entity can''t be null")
     }
 
     protected open fun update(sql: String, entity: E): E {
@@ -51,7 +51,7 @@ abstract class BaseJdbcRepository<E: Any, ID: Any> (protected val dataSource: Da
     protected fun <R: Any> processSql(sql: String,
                                       resultSetExecutor: (input: PreparedStatement) -> R?,
                                       params: List<Any> = Collections.emptyList(),
-                                      statementKey: Int = Statement.NO_GENERATED_KEYS): Optional<R> {
+                                      statementKey: Int = Statement.NO_GENERATED_KEYS): R? {
         try {
             dataSource.connection.use { connection ->
                 return processPreparedStatement(connection, sql, params, resultSetExecutor, statementKey)
@@ -92,11 +92,11 @@ abstract class BaseJdbcRepository<E: Any, ID: Any> (protected val dataSource: Da
         preparedStatement -> executeResultSetActionForFind(preparedStatement)
     }
 
-    private fun resultSetActionForFindAll(resultList: MutableList<E>): (preparedStatement: PreparedStatement) -> E? = {
+    private fun resultSetActionForFindAll(resultList: MutableList<E>): (preparedStatement: PreparedStatement) -> Unit = {
         preparedStatement -> executeResultSetActionForFindAll(preparedStatement, resultList)
     }
 
-    private fun resultSetActionForSave(entity: E): (preparedStatement: PreparedStatement) -> E? = {
+    private fun resultSetActionForSave(entity: E): (preparedStatement: PreparedStatement) -> E = {
         preparedStatement -> executeResultSetActionForSave(preparedStatement, entity)
     }
 
@@ -107,7 +107,13 @@ abstract class BaseJdbcRepository<E: Any, ID: Any> (protected val dataSource: Da
     private fun executeResultSetActionForFind(preparedStatement: PreparedStatement): E? {
         try {
             preparedStatement.executeQuery().use { resultSet ->
-                return if (resultSet.next()) constructEntity(resultSet) else null
+
+                return if (resultSet.next()) {
+                    constructEntity(resultSet)
+                } else {
+                    null
+                }
+
             }
         } catch (e: SQLException) {
             LOGGER.error("Exception during performing JDBC ResultSet for findById, message: ${e.message}")
@@ -116,7 +122,7 @@ abstract class BaseJdbcRepository<E: Any, ID: Any> (protected val dataSource: Da
         }
     }
 
-    private fun executeResultSetActionForFindAll(preparedStatement: PreparedStatement, resultList: MutableList<E>): E? {
+    private fun executeResultSetActionForFindAll(preparedStatement: PreparedStatement, resultList: MutableList<E>) {
         try {
             preparedStatement.executeQuery().use { resultSet ->
 
@@ -124,7 +130,6 @@ abstract class BaseJdbcRepository<E: Any, ID: Any> (protected val dataSource: Da
                     resultList.add(constructEntity(resultSet))
                 }
 
-                return null
             }
         } catch (e: SQLException) {
             LOGGER.error("Exception during performing JDBC ResultSet for findAll, message: ${e.message}")
@@ -133,12 +138,18 @@ abstract class BaseJdbcRepository<E: Any, ID: Any> (protected val dataSource: Da
         }
     }
 
-    private fun executeResultSetActionForSave(preparedStatement: PreparedStatement, entity: E): E? {
+    private fun executeResultSetActionForSave(preparedStatement: PreparedStatement, entity: E): E {
         try {
 
             preparedStatement.executeUpdate()
             preparedStatement.generatedKeys.use { generatedKeys ->
-                return if (generatedKeys.next()) constructSavedEntity(generatedKeys, entity) else null
+
+                return if (generatedKeys.next()) {
+                    constructSavedEntity(generatedKeys, entity)
+                } else {
+                    throw JdbcRepositoryException("ResultSet for save action is empty")
+                }
+
             }
 
         } catch (e: SQLException) {
@@ -167,11 +178,11 @@ abstract class BaseJdbcRepository<E: Any, ID: Any> (protected val dataSource: Da
                                                   sql: String,
                                                   params: List<Any>,
                                                   resultSetExecutor: (input: PreparedStatement) -> R?,
-                                                  statementKey: Int) : Optional<R> {
+                                                  statementKey: Int) : R? {
 
         connection.prepareStatement(sql, statementKey).use { preparedStatement ->
             setParams(preparedStatement, params)
-            return Optional.ofNullable(resultSetExecutor(preparedStatement))
+            return resultSetExecutor(preparedStatement)
         }
 
     }

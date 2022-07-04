@@ -45,8 +45,8 @@ class EmployeeJdbcRepository @Inject constructor(dataSource: DataSource) : BaseJ
 
     override fun convertEntityToParams(entity: EmployeeEntity): List<Any> {
         val params = ArrayList<Any>()
-        params.add(entity.firstName!!)
-        params.add(entity.surname!!)
+        params.add(entity.firstName)
+        params.add(entity.surname)
         params.add(entity.positionEntity!!.id!!)
 
         if (entity.id != null) {
@@ -82,7 +82,7 @@ class EmployeeJdbcRepository @Inject constructor(dataSource: DataSource) : BaseJ
         }
     }
 
-    override fun find(id: Long): Optional<EmployeeEntity> {
+    override fun find(id: Long): EmployeeEntity? {
         LOGGER.debug("Finding EmployeeEntity in database started for id: $id")
         val employee = super.find(FIND_EMPLOYEE_BY_ID_SQL, id)
         LOGGER.trace("EmployeeEntity detailed printing: $employee")

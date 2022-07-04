@@ -23,10 +23,10 @@ data class EmployeeEntity(
     val id: Long? = null,
 
     @Column(name = "first_name", nullable = false)
-    val firstName: String? = null,
+    val firstName: String = "",
 
     @Column(name = "surname", nullable = false)
-    val surname: String? = null,
+    val surname: String = "",
 
     @ManyToOne
     @JoinColumn(name = "position_id", nullable = false)

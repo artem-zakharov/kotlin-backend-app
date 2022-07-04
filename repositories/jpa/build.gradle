@@ -7,7 +7,7 @@ version '1.0.0'
 
 dependencies {
     implementation group: 'javax.persistence', name: 'javax.persistence-api', version: '2.2'
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    implementation group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib-jdk8', version: '1.7.0'
 }
 
 compileKotlin {

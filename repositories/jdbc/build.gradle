@@ -10,7 +10,7 @@ dependencies {
 
     implementation group: 'com.zaxxer', name: 'HikariCP', version: '5.0.1'
 
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    implementation group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib-jdk8', version: '1.7.0'
 }
 
 compileKotlin {

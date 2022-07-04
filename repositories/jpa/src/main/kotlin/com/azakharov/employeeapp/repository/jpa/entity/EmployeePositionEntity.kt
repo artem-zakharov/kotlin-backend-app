@@ -21,7 +21,7 @@ data class EmployeePositionEntity(
     val id: Long? = null,
 
     @Column(name = "name", nullable = false)
-    val name: String? = null
+    val name: String = ""
 
 ) {
 
