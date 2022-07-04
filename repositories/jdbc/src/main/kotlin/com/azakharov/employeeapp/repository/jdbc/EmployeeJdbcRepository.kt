@@ -43,27 +43,30 @@ class EmployeeJdbcRepository @Inject constructor(dataSource: DataSource) : BaseJ
         private const val EMPLOYEE_POSITION_NAME_COLUMN = "p.name"
     }
 
-    override fun convertEntityToParams(entity: EmployeeEntity): List<Any> {
-        val params = ArrayList<Any>()
+    override fun convertEntityToParams(entity: EmployeeEntity): List<Any?> {
+        val params = ArrayList<Any?>()
         params.add(entity.firstName)
         params.add(entity.surname)
-        params.add(entity.positionEntity!!.id!!)
+
+        if (entity.positionEntity != null) {
+            params.add(entity.positionEntity!!.id)
+        }
 
         if (entity.id != null) {
-            params.add(entity.id!!)
+            params.add(entity.id)
         }
 
         return params
     }
 
     override fun constructEntity(resultSet: ResultSet): EmployeeEntity {
-        try {
+        return try {
             val position = EmployeePositionEntity(resultSet.getLong(POSITION_ID_COLUMN),
                                                   resultSet.getString(EMPLOYEE_POSITION_NAME_COLUMN))
-            return EmployeeEntity(resultSet.getLong(ID_COLUMN),
-                                  resultSet.getString(EMPLOYEE_FIRST_NAME_COLUMN),
-                                  resultSet.getString(EMPLOYEE_SURNAME_COLUMN),
-                                  position)
+            EmployeeEntity(resultSet.getLong(ID_COLUMN),
+                           resultSet.getString(EMPLOYEE_FIRST_NAME_COLUMN),
+                           resultSet.getString(EMPLOYEE_SURNAME_COLUMN),
+                           position)
         } catch (e: SQLException) {
             LOGGER.error("Exception during extracting data from JDBC result set, message: ${e.message}")
             LOGGER.debug("Exception during extracting data from JDBC result set", e)
@@ -72,9 +75,9 @@ class EmployeeJdbcRepository @Inject constructor(dataSource: DataSource) : BaseJ
     }
 
     override fun constructSavedEntity(generatedKeys: ResultSet, saved: EmployeeEntity): EmployeeEntity {
-        try {
+        return try {
             val id = generatedKeys.getInt(ID_COLUMN)
-            return EmployeeEntity(id.toLong(), saved.firstName, saved.surname, saved.positionEntity)
+            EmployeeEntity(id.toLong(), saved.firstName, saved.surname, saved.positionEntity)
         } catch (e: SQLException) {
             LOGGER.error("Exception during extracting data from JDBC result set, message: ${e.message}")
             LOGGER.debug("Exception during extracting data from JDBC result set", e)

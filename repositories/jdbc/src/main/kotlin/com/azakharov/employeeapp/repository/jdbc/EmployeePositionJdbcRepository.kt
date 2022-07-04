@@ -32,20 +32,20 @@ class EmployeePositionJdbcRepository @Inject constructor (dataSource: DataSource
         private const val NAME_COLUMN = "name"
     }
 
-    override fun convertEntityToParams(entity: EmployeePositionEntity): List<Any> {
-        val params = ArrayList<Any>()
+    override fun convertEntityToParams(entity: EmployeePositionEntity): List<Any?> {
+        val params = ArrayList<Any?>()
 
         params.add(entity.name)
         if (entity.id != null) {
-            params.add(entity.id!!)
+            params.add(entity.id)
         }
 
         return params
     }
 
     override fun constructEntity(resultSet: ResultSet): EmployeePositionEntity {
-        try {
-            return EmployeePositionEntity(resultSet.getLong(ID_COLUMN), resultSet.getString(NAME_COLUMN))
+        return try {
+            EmployeePositionEntity(resultSet.getLong(ID_COLUMN), resultSet.getString(NAME_COLUMN))
         } catch (e: SQLException) {
             LOGGER.error("Exception during extracting data from JDBC result set, message: ${e.message}")
             LOGGER.debug("Exception during extracting data from JDBC result set", e)
@@ -54,9 +54,9 @@ class EmployeePositionJdbcRepository @Inject constructor (dataSource: DataSource
     }
 
     override fun constructSavedEntity(generatedKeys: ResultSet, saved: EmployeePositionEntity): EmployeePositionEntity {
-        try {
+        return try {
             val id = generatedKeys.getInt(ID_COLUMN)
-            return EmployeePositionEntity(id.toLong(), saved.name)
+            EmployeePositionEntity(id.toLong(), saved.name)
         } catch (e: SQLException) {
             LOGGER.error("Exception during extracting data from JDBC result set, message: ${e.message}")
             LOGGER.debug("Exception during extracting data from JDBC result set", e)

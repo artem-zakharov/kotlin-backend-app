@@ -39,7 +39,7 @@ abstract class BaseJdbcRepository<E: Any, ID: Any> (protected val dataSource: Da
 
     protected open fun update(sql: String, entity: E): E {
         val params = convertEntityToParams(entity)
-        processSql(sql, resultSetActionForUpdate(params.first() as ID) ,params)
+        processSql(sql, resultSetActionForUpdate(params.first() as ID), params)
 
         return entity
     }
@@ -50,11 +50,11 @@ abstract class BaseJdbcRepository<E: Any, ID: Any> (protected val dataSource: Da
 
     protected fun <R: Any> processSql(sql: String,
                                       resultSetExecutor: (input: PreparedStatement) -> R?,
-                                      params: List<Any> = Collections.emptyList(),
+                                      params: List<Any?> = Collections.emptyList(),
                                       statementKey: Int = Statement.NO_GENERATED_KEYS): R? {
-        try {
+        return try {
             dataSource.connection.use { connection ->
-                return processPreparedStatement(connection, sql, params, resultSetExecutor, statementKey)
+                processPreparedStatement(connection, sql, params, resultSetExecutor, statementKey)
             }
         } catch (e: SQLException) {
             LOGGER.error("Exception during processing SQL query, message: ${e.message}")
@@ -69,7 +69,7 @@ abstract class BaseJdbcRepository<E: Any, ID: Any> (protected val dataSource: Da
      * @param entity database entity.
      * @return list of parameters.
      */
-    protected abstract fun convertEntityToParams(entity: E): List<Any>
+    protected abstract fun convertEntityToParams(entity: E): List<Any?>
 
     /**
      * Constructs entity from ResultSet after processing SQL query.
@@ -105,15 +105,9 @@ abstract class BaseJdbcRepository<E: Any, ID: Any> (protected val dataSource: Da
     }
 
     private fun executeResultSetActionForFind(preparedStatement: PreparedStatement): E? {
-        try {
+        return try {
             preparedStatement.executeQuery().use { resultSet ->
-
-                return if (resultSet.next()) {
-                    constructEntity(resultSet)
-                } else {
-                    null
-                }
-
+                if (resultSet.next()) constructEntity(resultSet) else null
             }
         } catch (e: SQLException) {
             LOGGER.error("Exception during performing JDBC ResultSet for findById, message: ${e.message}")
@@ -139,12 +133,12 @@ abstract class BaseJdbcRepository<E: Any, ID: Any> (protected val dataSource: Da
     }
 
     private fun executeResultSetActionForSave(preparedStatement: PreparedStatement, entity: E): E {
-        try {
+        return try {
 
             preparedStatement.executeUpdate()
             preparedStatement.generatedKeys.use { generatedKeys ->
 
-                return if (generatedKeys.next()) {
+                if (generatedKeys.next()) {
                     constructSavedEntity(generatedKeys, entity)
                 } else {
                     throw JdbcRepositoryException("ResultSet for save action is empty")
@@ -176,7 +170,7 @@ abstract class BaseJdbcRepository<E: Any, ID: Any> (protected val dataSource: Da
 
     private fun <R: Any> processPreparedStatement(connection: Connection,
                                                   sql: String,
-                                                  params: List<Any>,
+                                                  params: List<Any?>,
                                                   resultSetExecutor: (input: PreparedStatement) -> R?,
                                                   statementKey: Int) : R? {
 
@@ -187,7 +181,7 @@ abstract class BaseJdbcRepository<E: Any, ID: Any> (protected val dataSource: Da
 
     }
 
-    private fun setParams(preparedStatement: PreparedStatement, params: List<Any>) {
+    private fun setParams(preparedStatement: PreparedStatement, params: List<Any?>) {
         try {
             for (index in params.indices) {
                 val sqlQueryIndex = index + 1
