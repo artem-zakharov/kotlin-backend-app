@@ -30,12 +30,11 @@ abstract class BaseJdbcRepository<E: Any, ID: Any> (protected val dataSource: Da
         return entities
     }
 
-    protected open fun save(sql: String, entity: E): E {
-        return processSql(sql,
-                          resultSetActionForSave(entity),
-                          convertEntityToParams(entity),
-                          Statement.RETURN_GENERATED_KEYS)?: throw JdbcRepositoryException("Saved entity can''t be null")
-    }
+    protected open fun save(sql: String, entity: E): E = processSql(sql,
+                                                                    resultSetActionForSave(entity),
+                                                                    convertEntityToParams(entity),
+                                                                    Statement.RETURN_GENERATED_KEYS)
+                                                         ?: throw JdbcRepositoryException("Saved entity can''t be null")
 
     protected open fun update(sql: String, entity: E): E {
         val params = convertEntityToParams(entity)
