@@ -7,6 +7,10 @@ import com.azakharov.employeeapp.rest.view.EmployeeView
 import javax.inject.Inject
 import spark.Spark
 
+/**
+ * Kotlin Copy of
+ * <a href="https://github.com/artemzakharovbelarus/employee-module-app/blob/master/rest/spark/src/main/java/com/azakharov/employeeapp/rest/spark/proxy/EmployeeSparkProxyRestController.java">https://github.com/artemzakharovbelarus/employee-module-app/blob/master/rest/spark/src/main/java/com/azakharov/employeeapp/rest/spark/proxy/EmployeeSparkProxyRestController.java</a>
+ */
 class EmployeeRestSparkProxyController @Inject constructor(
     private val employeeController: EmployeeController<EmployeeDto, EmployeeView>,
     jsonUtil: JsonUtil

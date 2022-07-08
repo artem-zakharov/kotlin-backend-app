@@ -16,6 +16,10 @@ import spark.Request
 import spark.Response
 import spark.Spark
 
+/**
+ * Kotlin Copy of
+ * <a href="https://github.com/artemzakharovbelarus/employee-module-app/blob/master/rest/spark/src/main/java/com/azakharov/employeeapp/rest/spark/exception/SparkExceptionHandler.java">https://github.com/artemzakharovbelarus/employee-module-app/blob/master/rest/spark/src/main/java/com/azakharov/employeeapp/rest/spark/exception/SparkExceptionHandler.java</a>
+ */
 class SparkExceptionHandler @Inject constructor(
     private val jsonUtil: JsonUtil
 ) {

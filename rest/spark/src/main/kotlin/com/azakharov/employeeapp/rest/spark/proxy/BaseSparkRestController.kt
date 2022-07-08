@@ -10,6 +10,10 @@ import spark.Route
 import spark.Spark
 import java.text.MessageFormat
 
+/**
+ * Kotlin Copy of
+ * <a href="https://github.com/artemzakharovbelarus/employee-module-app/blob/master/rest/spark/src/main/java/com/azakharov/employeeapp/rest/spark/proxy/BaseSparkRestController.java">https://github.com/artemzakharovbelarus/employee-module-app/blob/master/rest/spark/src/main/java/com/azakharov/employeeapp/rest/spark/proxy/BaseSparkRestController.java</a>
+ */
 abstract class BaseSparkRestController<DTO, V : Any>(
     private val jsonUtil: JsonUtil
 ) {

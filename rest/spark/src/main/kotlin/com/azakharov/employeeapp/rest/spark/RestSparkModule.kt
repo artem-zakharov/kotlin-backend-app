@@ -23,6 +23,10 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.inject.AbstractModule
 import com.google.inject.TypeLiteral
 
+/**
+ * Kotlin Copy of
+ * <a href="https://github.com/artemzakharovbelarus/kotlin-backend-app/blob/master/rest/spark/src/main/kotlin/com/azakharov/employeeapp/rest/spark/RestSparkModule.kt">https://github.com/artemzakharovbelarus/kotlin-backend-app/blob/master/rest/spark/src/main/kotlin/com/azakharov/employeeapp/rest/spark/RestSparkModule.kt</a>
+ */
 class RestSparkModule : AbstractModule() {
 
     override fun configure() {
