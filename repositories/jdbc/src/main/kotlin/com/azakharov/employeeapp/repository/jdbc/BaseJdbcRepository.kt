@@ -36,6 +36,7 @@ abstract class BaseJdbcRepository<E: Any, ID: Any> (protected val dataSource: Da
                                                                     Statement.RETURN_GENERATED_KEYS)
                                                          ?: throw JdbcRepositoryException("Saved entity can''t be null")
 
+    @Suppress("UNCHECKED_CAST")
     protected open fun update(sql: String, entity: E): E {
         val params = convertEntityToParams(entity)
         processSql(sql, resultSetActionForUpdate(params.last() as ID), params)

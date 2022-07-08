@@ -1,9 +1,10 @@
 rootProject.name = 'kotlin-backend-app'
 
-include 'repositories', 'repositories:jpa', ':repositories:jdbc', 'services', 'api', 'rest', ':rest:controllers',
-        ':rest:spark'
+include 'repositories', 'repositories:jpa', ':repositories:jdbc', ':repositories:hibernate', 'services', 'api', 'rest',
+        ':rest:controllers', ':rest:spark'
 
 findProject(':repositories:jpa')?.name = 'jpa'
 findProject(':repositories:jdbc')?.name = 'jdbc'
+findProject(':repositories:hibernate')?.name = 'hibernate'
 findProject(':rest:controllers')?.name = 'controllers'
 findProject(':rest:spark')?.name = 'spark'

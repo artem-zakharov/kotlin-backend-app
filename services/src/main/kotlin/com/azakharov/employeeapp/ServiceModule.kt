@@ -1,6 +1,6 @@
 package com.azakharov.employeeapp
 
-import com.azakharov.employeeapp.repository.jdbc.JdbcModule
+import com.azakharov.employeeapp.repository.hibernate.HibernateModule
 import com.azakharov.employeeapp.util.converter.EmployeeBidirectionalDomainConverter
 import com.azakharov.employeeapp.util.converter.EmployeePositionBidirectionalDomainConverter
 import com.google.inject.AbstractModule
@@ -12,7 +12,9 @@ import com.google.inject.AbstractModule
 class ServiceModule : AbstractModule() {
 
     override fun configure() {
-        super.install(JdbcModule())
+        super.install(HibernateModule())
+//        super.install(JdbcModule())
+
         bindDomainConverters()
     }
 

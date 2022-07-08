@@ -7,7 +7,7 @@ version '1.0.0'
 
 dependencies {
     implementation project(':repositories:jpa')
-//    implementation project(':repositories:hibernate')
+    implementation project(':repositories:hibernate')
     implementation project(':repositories:jdbc')
 //    implementation project(':repositories:spring:jdbc')
 //    implementation project(':repositories:spring:data')
