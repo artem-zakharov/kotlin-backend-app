@@ -11,7 +11,7 @@ dependencies {
     implementation project(':repositories:jdbc')
 //    implementation project(':repositories:spring:jdbc')
 //    implementation project(':repositories:spring:data')
-//    implementation project(':repositories:eclipselink')
+    implementation project(':repositories:eclipselink')
 
     implementation group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib-jdk8', version: '1.7.0'
 }
