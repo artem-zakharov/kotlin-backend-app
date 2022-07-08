@@ -1,0 +1,11 @@
+group 'com.azakharov.employeeapp.rest'
+version '1.0.0'
+
+subprojects {
+    dependencies {
+        implementation project(':api')
+        implementation project(':services');
+
+        implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.13.3'
+    }
+}

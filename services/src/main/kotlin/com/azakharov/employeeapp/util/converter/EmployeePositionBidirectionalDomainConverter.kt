@@ -16,6 +16,7 @@ class EmployeePositionBidirectionalDomainConverter : BidirectionalDomainConverte
     }
 
     override fun convertToEntity(domain: EmployeePosition): EmployeePositionEntity {
-        return EmployeePositionEntity(domain.id.value, domain.name)
+        val id = if (domain.id != null) domain.id.value else null
+        return EmployeePositionEntity(id, domain.name)
     }
 }

@@ -20,7 +20,8 @@ class EmployeeBidirectionalDomainConverter @Inject constructor(
     }
 
     override fun convertToEntity(domain: Employee): EmployeeEntity {
+        val id = if (domain.id != null) domain.id.value else null
         val positionEntity = positionConverter.convertToEntity(domain.position)
-        return EmployeeEntity(domain.id.value, domain.firstName, domain.surname, positionEntity)
+        return EmployeeEntity(id, domain.firstName, domain.surname, positionEntity)
     }
 }

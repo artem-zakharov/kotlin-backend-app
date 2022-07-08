@@ -18,7 +18,7 @@ import java.util.Optional
 abstract class BaseJdbcRepository<E: Any, ID: Any> (protected val dataSource: DataSource) {
 
     companion object {
-        private val LOGGER: Logger = LoggerFactory.getLogger(BaseJdbcRepository::class.java)
+        private val LOGGER = LoggerFactory.getLogger(BaseJdbcRepository::class.java)
     }
 
     protected open fun find(sql: String, id: ID): E? = processSql(sql, resultSetActionForFind(), listOf(id))
@@ -38,13 +38,13 @@ abstract class BaseJdbcRepository<E: Any, ID: Any> (protected val dataSource: Da
 
     protected open fun update(sql: String, entity: E): E {
         val params = convertEntityToParams(entity)
-        processSql(sql, resultSetActionForUpdate(params.first() as ID), params)
+        processSql(sql, resultSetActionForUpdate(params.last() as ID), params)
 
         return entity
     }
 
     protected open fun delete(sql: String, id: ID) {
-        processSql(sql, resultSetActionForUpdate(id))
+        processSql(sql, resultSetActionForUpdate(id), listOf(id))
     }
 
     protected fun <R: Any> processSql(sql: String,

@@ -18,7 +18,7 @@ class EmployeePositionJdbcRepository @Inject constructor (dataSource: DataSource
     BaseJdbcRepository<EmployeePositionEntity, Long>(dataSource), EmployeePositionRepository {
 
     companion object {
-        private val LOGGER: Logger = LoggerFactory.getLogger(EmployeePositionJdbcRepository::class.java)
+        private val LOGGER = LoggerFactory.getLogger(EmployeePositionJdbcRepository::class.java)
 
         /** SQL queries  */
         private const val FIND_EMPLOYEE_POSITION_BY_ID_SQL = "SELECT id, name FROM employee_positions WHERE ID = ?"

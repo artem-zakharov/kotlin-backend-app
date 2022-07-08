@@ -5,12 +5,13 @@ import com.azakharov.employeeapp.domain.id.EmployeePositionId
 import com.azakharov.employeeapp.repository.jpa.EmployeePositionRepository
 import com.azakharov.employeeapp.repository.jpa.entity.EmployeePositionEntity
 import com.azakharov.employeeapp.util.converter.EmployeePositionBidirectionalDomainConverter
+import javax.inject.Inject
 
 /**
  * Kotlin Copy of
  * <a href="https://github.com/artemzakharovbelarus/employee-module-app/blob/master/services/src/main/java/com/azakharov/employeeapp/service/employeeposition/EmployeePositionServiceImpl.java">https://github.com/artemzakharovbelarus/employee-module-app/blob/master/services/src/main/java/com/azakharov/employeeapp/service/employeeposition/EmployeePositionServiceImpl.java</a>
  */
-class EmployeePositionServiceImpl(
+class EmployeePositionServiceImpl @Inject constructor(
     private val positionRepository: EmployeePositionRepository,
     private val positionConverter: EmployeePositionBidirectionalDomainConverter
 ) : EmployeePositionService {

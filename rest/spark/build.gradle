@@ -1,0 +1,21 @@
+plugins {
+    id 'org.jetbrains.kotlin.jvm' version '1.7.0'
+}
+
+group 'com.azakharov.employeeapp.rest.spark'
+version '1.0.0'
+
+dependencies {
+    implementation project(':api')
+    implementation project(':rest:controllers')
+
+    implementation group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib-jdk8', version: '1.7.0'
+
+    implementation group: 'com.sparkjava', name: 'spark-core', version: '2.8.0'
+}
+
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "17"
+    }
+}

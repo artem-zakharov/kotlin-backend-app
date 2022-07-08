@@ -44,6 +44,10 @@ class EmployeeServiceImpl @Inject constructor(
     }
 
     private fun checkPositionOnExisting(position: EmployeePosition) {
+        if (position.id == null) {
+            throw EmployeePositionNotFoundException("Position ID can't be null during checking on existing")
+        }
+
         employeePositionService.find(position.id)
             ?: throw EmployeePositionNotFoundException("Position with ID ${position.id} wasn''t found")
     }

@@ -7,7 +7,7 @@ import com.azakharov.employeeapp.domain.id.EmployeeId
  * <a href="https://github.com/artemzakharovbelarus/employee-module-app/blob/master/services/src/main/java/com/azakharov/employeeapp/domain/Employee.java">https://github.com/artemzakharovbelarus/employee-module-app/blob/master/services/src/main/java/com/azakharov/employeeapp/domain/Employee.java</a>
  */
 data class Employee(
-    val id: EmployeeId,
+    val id: EmployeeId?,
     val firstName: String,
     val surname: String,
     val position: EmployeePosition

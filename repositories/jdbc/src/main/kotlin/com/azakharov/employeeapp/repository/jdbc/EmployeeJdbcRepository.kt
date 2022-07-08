@@ -19,7 +19,7 @@ class EmployeeJdbcRepository @Inject constructor(dataSource: DataSource) : BaseJ
     EmployeeRepository {
 
     companion object {
-        private val LOGGER: Logger = LoggerFactory.getLogger(EmployeeJdbcRepository::class.java)
+        private val LOGGER = LoggerFactory.getLogger(EmployeeJdbcRepository::class.java)
 
         /** SQL queries  */
         private const val FIND_EMPLOYEE_BY_ID_SQL = "SELECT e.id, e.first_name, e.surname, p.id AS \"p.ID\", " +
