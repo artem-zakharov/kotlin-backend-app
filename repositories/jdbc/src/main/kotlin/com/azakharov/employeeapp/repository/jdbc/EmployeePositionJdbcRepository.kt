@@ -4,11 +4,9 @@ import com.azakharov.employeeapp.repository.jpa.EmployeePositionRepository
 import com.azakharov.employeeapp.repository.jpa.entity.EmployeePositionEntity
 import javax.inject.Inject
 import javax.sql.DataSource
-import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.sql.ResultSet
 import java.sql.SQLException
-import java.util.Optional
 
 /**
  * Kotlin Copy of

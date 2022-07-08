@@ -5,12 +5,9 @@ import com.azakharov.employeeapp.domain.exception.InvalidTypedIdException
 import com.azakharov.employeeapp.rest.util.json.JsonUtil
 import com.azakharov.employeeapp.rest.view.ExceptionView
 import com.azakharov.employeeapp.service.exception.EmployeePositionNotFoundException
-import com.fasterxml.jackson.core.JsonProcessingException
-import com.fasterxml.jackson.databind.exc.ValueInstantiationException
 import com.google.common.net.MediaType
 import javax.inject.Inject
 import org.eclipse.jetty.http.HttpStatus
-import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import spark.Request
 import spark.Response
