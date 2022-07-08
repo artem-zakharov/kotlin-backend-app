@@ -6,6 +6,10 @@ import com.azakharov.employeeapp.rest.dto.EmployeeDto
 import com.azakharov.employeeapp.rest.view.EmployeeView
 import javax.inject.Inject
 
+/**
+ * Kotlin Copy of
+ * <a href="https://github.com/artemzakharovbelarus/employee-module-app/blob/master/rest/controllers/src/main/java/com/azakharov/employeeapp/rest/util/converter/EmployeeAllSideDomainConverter.java">https://github.com/artemzakharovbelarus/employee-module-app/blob/master/rest/controllers/src/main/java/com/azakharov/employeeapp/rest/util/converter/EmployeeAllSideDomainConverter.java</a>
+ */
 class EmployeeAllSideDomainConverter @Inject constructor(
     private val positionConverter: EmployeePositionAllSideDomainConverter
 ) : AllSideDomainConverter<EmployeeDto, Employee, EmployeeView> {

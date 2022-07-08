@@ -5,6 +5,10 @@ import com.azakharov.employeeapp.domain.id.EmployeePositionId
 import com.azakharov.employeeapp.rest.dto.EmployeePositionDto
 import com.azakharov.employeeapp.rest.view.EmployeePositionView
 
+/**
+ * Kotlin Copy of
+ * <a href="https://github.com/artemzakharovbelarus/employee-module-app/blob/master/rest/controllers/src/main/java/com/azakharov/employeeapp/rest/util/converter/EmployeePositionAllSideDomainConverter.java">https://github.com/artemzakharovbelarus/employee-module-app/blob/master/rest/controllers/src/main/java/com/azakharov/employeeapp/rest/util/converter/EmployeePositionAllSideDomainConverter.java</a>
+ */
 class EmployeePositionAllSideDomainConverter : AllSideDomainConverter<EmployeePositionDto, EmployeePosition, EmployeePositionView> {
 
     private companion object {

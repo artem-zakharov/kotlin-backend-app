@@ -12,6 +12,10 @@ import java.io.InputStreamReader
 import java.nio.charset.StandardCharsets
 import java.util.stream.Collectors
 
+/**
+ * Kotlin Copy of
+ * <a href="https://github.com/artemzakharovbelarus/employee-module-app/blob/master/rest/controllers/src/main/java/com/azakharov/employeeapp/rest/util/JsonUtil.java">https://github.com/artemzakharovbelarus/employee-module-app/blob/master/rest/controllers/src/main/java/com/azakharov/employeeapp/rest/util/JsonUtil.java</a>
+ */
 class JsonUtil @Inject constructor(
     private val objectMapper: ObjectMapper
 ) {

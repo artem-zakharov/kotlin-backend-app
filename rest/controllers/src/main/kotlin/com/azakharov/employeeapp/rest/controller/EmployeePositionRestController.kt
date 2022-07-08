@@ -9,6 +9,10 @@ import com.azakharov.employeeapp.rest.view.EmployeePositionView
 import com.azakharov.employeeapp.service.employeeposition.EmployeePositionService
 import javax.inject.Inject
 
+/**
+ * Kotlin Copy of
+ * <a href="https://github.com/artemzakharovbelarus/employee-module-app/blob/master/rest/controllers/src/main/java/com/azakharov/employeeapp/rest/controller/EmployeePositionRestController.java">https://github.com/artemzakharovbelarus/employee-module-app/blob/master/rest/controllers/src/main/java/com/azakharov/employeeapp/rest/controller/EmployeePositionRestController.java</a>
+ */
 class EmployeePositionRestController @Inject constructor(
     private val positionService: EmployeePositionService,
     private val positionConverter: EmployeePositionAllSideDomainConverter
