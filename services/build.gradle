@@ -9,7 +9,7 @@ dependencies {
     implementation project(':repositories:jpa')
     implementation project(':repositories:hibernate')
     implementation project(':repositories:jdbc')
-//    implementation project(':repositories:spring:jdbc')
+    implementation project(':repositories:spring:jdbc')
 //    implementation project(':repositories:spring:data')
     implementation project(':repositories:eclipselink')
 

@@ -1,11 +1,13 @@
 rootProject.name = 'kotlin-backend-app'
 
 include 'repositories', 'repositories:jpa', ':repositories:jdbc', ':repositories:hibernate', ':repositories:eclipselink',
-        'services', 'api', 'rest', ':rest:controllers', ':rest:spark'
+        'repositories:spring', ':repositories:spring:jdbc', 'services', 'api', 'rest', ':rest:controllers', ':rest:spark'
 
 findProject(':repositories:jpa')?.name = 'jpa'
 findProject(':repositories:jdbc')?.name = 'jdbc'
 findProject(':repositories:hibernate')?.name = 'hibernate'
 findProject(':repositories:eclipselink')?.name = 'eclipselink'
+findProject(':repositories:spring')?.name = 'spring'
+findProject(':repositories:spring:jdbc')?.name = 'jdbc'
 findProject(':rest:controllers')?.name = 'controllers'
 findProject(':rest:spark')?.name = 'spark'
