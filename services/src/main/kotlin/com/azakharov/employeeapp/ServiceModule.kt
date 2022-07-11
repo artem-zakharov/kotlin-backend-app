@@ -1,6 +1,6 @@
 package com.azakharov.employeeapp
 
-import com.azakharov.employeeapp.repository.spring.jdbc.SpringJdbcModule
+import com.azakharov.employeeapp.repository.spring.data.SpringDataModule
 import com.azakharov.employeeapp.util.converter.EmployeeBidirectionalDomainConverter
 import com.azakharov.employeeapp.util.converter.EmployeePositionBidirectionalDomainConverter
 import com.google.inject.AbstractModule
@@ -12,7 +12,8 @@ import com.google.inject.AbstractModule
 class ServiceModule : AbstractModule() {
 
     override fun configure() {
-        super.install(SpringJdbcModule())
+        super.install(SpringDataModule())
+//        super.install(SpringJdbcModule())
 //        super.install(EclipseLinkModule())
 //        super.install(HibernateModule())
 //        super.install(JdbcModule())
