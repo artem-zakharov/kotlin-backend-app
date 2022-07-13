@@ -13,9 +13,9 @@ import org.springframework.jdbc.core.JdbcTemplate
 class SpringJdbcModule : AbstractModule() {
 
     private companion object {
-        private const val ENV_DATASOURCE_URL_KEY = "SPRING_DATASOURCE_URL"
-        private const val ENV_DATASOURCE_USERNAME_KEY = "POSTGRES_USER"
-        private const val ENV_DATASOURCE_PASSWORD_KEY = "POSTGRES_PASSWORD"
+        private val ENV_DATASOURCE_URL = System.getenv("SPRING_DATASOURCE_URL")
+        private val ENV_DATASOURCE_USERNAME = System.getenv("POSTGRES_USER")
+        private val ENV_DATASOURCE_PASSWORD = System.getenv("POSTGRES_PASSWORD")
     }
 
     @Provides
@@ -23,9 +23,9 @@ class SpringJdbcModule : AbstractModule() {
     fun provideHikariConfig(): HikariConfig? {
         val hikariConfig = HikariConfig()
 
-        hikariConfig.jdbcUrl = System.getenv(ENV_DATASOURCE_URL_KEY)
-        hikariConfig.username = System.getenv(ENV_DATASOURCE_USERNAME_KEY)
-        hikariConfig.password = System.getenv(ENV_DATASOURCE_PASSWORD_KEY)
+        hikariConfig.jdbcUrl = ENV_DATASOURCE_URL
+        hikariConfig.username = ENV_DATASOURCE_USERNAME
+        hikariConfig.password = ENV_DATASOURCE_PASSWORD
 
         return hikariConfig
     }

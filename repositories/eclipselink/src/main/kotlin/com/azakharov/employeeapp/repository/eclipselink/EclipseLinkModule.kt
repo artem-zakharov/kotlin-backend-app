@@ -22,9 +22,9 @@ class EclipseLinkModule : AbstractModule() {
         private const val JDBC_USERNAME_KEY = "javax.persistence.jdbc.user"
         private const val JDBC_PASSWORD_KEY = "javax.persistence.jdbc.password"
 
-        private const val ENV_DATASOURCE_URL_KEY = "SPRING_DATASOURCE_URL"
-        private const val ENV_DATASOURCE_USERNAME_KEY = "POSTGRES_USER"
-        private const val ENV_DATASOURCE_PASSWORD_KEY = "POSTGRES_PASSWORD"
+        private val ENV_DATASOURCE_URL = System.getenv("SPRING_DATASOURCE_URL")
+        private val ENV_DATASOURCE_USERNAME = System.getenv("POSTGRES_USER")
+        private val ENV_DATASOURCE_PASSWORD = System.getenv("POSTGRES_PASSWORD")
     }
 
     @Provides
@@ -48,8 +48,8 @@ class EclipseLinkModule : AbstractModule() {
     }
 
     private fun provideDataSource(): Map<String, String> {
-        return hashMapOf(JDBC_URL_KEY to System.getenv(ENV_DATASOURCE_URL_KEY),
-                         JDBC_USERNAME_KEY to System.getenv(ENV_DATASOURCE_USERNAME_KEY),
-                         JDBC_PASSWORD_KEY to System.getenv(ENV_DATASOURCE_PASSWORD_KEY))
+        return hashMapOf(JDBC_URL_KEY to ENV_DATASOURCE_URL,
+                         JDBC_USERNAME_KEY to ENV_DATASOURCE_USERNAME,
+                         JDBC_PASSWORD_KEY to ENV_DATASOURCE_PASSWORD)
     }
 }
