@@ -1,5 +1,5 @@
 plugins {
-    id 'org.jetbrains.kotlin.jvm' version '1.7.0'
+    id 'org.jetbrains.kotlin.jvm' version '1.8.0'
 }
 
 group 'com.azakharov.employeeapp.repository.eclipselink'
@@ -9,7 +9,7 @@ dependencies {
     implementation project(':repositories:jpa')
 
     implementation group: 'org.eclipse.persistence', name: 'eclipselink', version: '2.6.4'
-    implementation group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib-jdk8', version: '1.7.0'
+    implementation group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib-jdk8', version: '1.8.0'
 }
 
 compileKotlin {
