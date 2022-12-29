@@ -28,15 +28,13 @@ class EclipseLinkModule : AbstractModule() {
     }
 
     @Provides
-    fun provideEntityManagerFactory(): EntityManagerFactory {
-        return Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME, provideDataSource())
-    }
+    fun provideEntityManagerFactory(): EntityManagerFactory =
+        Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME, provideDataSource())
 
     @Provides
     @Singleton
-    fun provideEntityManager(entityManagerFactory: EntityManagerFactory): EntityManager {
-        return entityManagerFactory.createEntityManager()
-    }
+    fun provideEntityManager(entityManagerFactory: EntityManagerFactory): EntityManager =
+        entityManagerFactory.createEntityManager()
 
     override fun configure() {
         bindEclipseLinkRepositories()
@@ -47,9 +45,9 @@ class EclipseLinkModule : AbstractModule() {
         super.bind(EmployeeRepository::class.java).to(EmployeeEclipseLinkRepository::class.java)
     }
 
-    private fun provideDataSource(): Map<String, String> {
-        return hashMapOf(JDBC_URL_KEY to ENV_DATASOURCE_URL,
-                         JDBC_USERNAME_KEY to ENV_DATASOURCE_USERNAME,
-                         JDBC_PASSWORD_KEY to ENV_DATASOURCE_PASSWORD)
-    }
+    private fun provideDataSource() = mapOf(
+        JDBC_URL_KEY to ENV_DATASOURCE_URL,
+        JDBC_USERNAME_KEY to ENV_DATASOURCE_USERNAME,
+        JDBC_PASSWORD_KEY to ENV_DATASOURCE_PASSWORD
+    )
 }
