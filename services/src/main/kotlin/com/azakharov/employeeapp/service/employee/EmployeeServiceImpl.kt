@@ -1,6 +1,7 @@
 package com.azakharov.employeeapp.service.employee
 
 import com.azakharov.employeeapp.domain.Employee
+import com.azakharov.employeeapp.domain.EmployeeId
 import com.azakharov.employeeapp.domain.EmployeePosition
 import com.azakharov.employeeapp.repository.jpa.EmployeeRepository
 import com.azakharov.employeeapp.repository.jpa.entity.EmployeeEntity
@@ -19,35 +20,35 @@ class EmployeeServiceImpl @Inject constructor(
     private val employeeConverter: EmployeeBidirectionalDomainConverter
 ) : EmployeeService {
 
-    override fun find(id: EmployeeId): Employee? {
-        val employeeEntity = employeeRepository.find(id.value)
-        return if (employeeEntity != null) employeeConverter.convertToDomain(employeeEntity) else null
-    }
+    override fun find(id: EmployeeId): Employee? =
+        employeeRepository.find(id.value).let { employeeEntity ->
+            takeIf { employeeEntity != null }?.let {
+                employeeConverter.convertToDomain(employeeEntity!!)
+            }
+        }
 
-    override fun findAll(): List<Employee> = employeeRepository.findAll()
-                                                               .map(employeeConverter::convertToDomain)
+    override fun findAll(): List<Employee> = employeeRepository.findAll().map(employeeConverter::convertToDomain)
 
-    override fun save(domain: Employee): Employee = processUpsert(employeeRepository::save, domain)
+    override fun save(domain: Employee): Employee = processUpsert(domain) { employeeRepository.save(it) }
 
-    override fun update(domain: Employee): Employee = processUpsert(employeeRepository::update, domain)
+    override fun update(domain: Employee): Employee = processUpsert(domain) { employeeRepository.update(it) }
 
     override fun delete(id: EmployeeId) = employeeRepository.delete(id.value)
 
-    private fun processUpsert(upsert: (saving: EmployeeEntity) -> EmployeeEntity,
-                              savingEmployee: Employee): Employee {
+    private fun processUpsert(
+        savingEmployee: Employee,
+        upsert: (saving: EmployeeEntity) -> EmployeeEntity
+    ): Employee {
         checkPositionOnExisting(savingEmployee.position)
 
-        val savingEntity = employeeConverter.convertToEntity(savingEmployee)
-        val savedEntity = upsert(savingEntity)
-        return employeeConverter.convertToDomain(savedEntity)
-    }
-
-    private fun checkPositionOnExisting(position: EmployeePosition) {
-        if (position.id == null) {
-            throw EmployeePositionNotFoundException("Position ID can't be null during checking on existing")
+        return employeeConverter.convertToEntity(savingEmployee).let(upsert).run {
+            employeeConverter.convertToDomain(this)
         }
-
-        employeePositionService.find(position.id)
-            ?: throw EmployeePositionNotFoundException("Position with ID ${position.id} wasn''t found")
     }
+
+    private fun checkPositionOnExisting(position: EmployeePosition) =
+        position.id?.let { id ->
+            employeePositionService.find(id)
+                ?: throw EmployeePositionNotFoundException("Position with ID $id wasn't found")
+        } ?: throw EmployeePositionNotFoundException("Position ID can't be null during checking on existing")
 }

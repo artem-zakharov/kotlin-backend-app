@@ -1,7 +1,7 @@
 package com.azakharov.employeeapp.service.employeeposition
 
 import com.azakharov.employeeapp.domain.EmployeePosition
-import com.azakharov.employeeapp.domain.id.EmployeePositionId
+import com.azakharov.employeeapp.domain.EmployeePositionId
 import com.azakharov.employeeapp.repository.jpa.EmployeePositionRepository
 import com.azakharov.employeeapp.repository.jpa.entity.EmployeePositionEntity
 import com.azakharov.employeeapp.util.converter.EmployeePositionBidirectionalDomainConverter
@@ -16,24 +16,26 @@ class EmployeePositionServiceImpl @Inject constructor(
     private val positionConverter: EmployeePositionBidirectionalDomainConverter
 ) : EmployeePositionService {
 
-    override fun find(id: EmployeePositionId): EmployeePosition? {
-        val positionEntity = positionRepository.find(id.value)
-        return if (positionEntity != null) positionConverter.convertToDomain(positionEntity) else null
-    }
+    override fun find(id: EmployeePositionId): EmployeePosition? =
+        positionRepository.find(id.value).let { positionEntity ->
+            takeIf { positionEntity != null }?.let {
+                positionConverter.convertToDomain(positionEntity!!)
+            }
+        }
 
-    override fun findAll(): List<EmployeePosition> = positionRepository.findAll()
-                                                                       .map(positionConverter::convertToDomain)
+    override fun findAll(): List<EmployeePosition> = positionRepository.findAll().map(positionConverter::convertToDomain)
 
-    override fun save(domain: EmployeePosition): EmployeePosition = processUpsert(positionRepository::save, domain)
+    override fun save(domain: EmployeePosition): EmployeePosition = processUpsert(domain) { positionRepository.save(it) }
 
-    override fun update(domain: EmployeePosition): EmployeePosition = processUpsert(positionRepository::update, domain)
+    override fun update(domain: EmployeePosition): EmployeePosition = processUpsert(domain) { positionRepository.update(it) }
 
     override fun delete(id: EmployeePositionId) = positionRepository.delete(id.value)
 
-    private fun processUpsert(upsert: (saving: EmployeePositionEntity) -> EmployeePositionEntity,
-                              savingPosition: EmployeePosition): EmployeePosition {
-        val savingEntity = positionConverter.convertToEntity(savingPosition)
-        val savedEntity = upsert(savingEntity)
-        return positionConverter.convertToDomain(savedEntity)
-    }
+    private fun processUpsert(
+        savingPosition: EmployeePosition,
+        upsert: (saving: EmployeePositionEntity) -> EmployeePositionEntity
+    ): EmployeePosition =
+        positionConverter.convertToEntity(savingPosition).let(upsert).run {
+            positionConverter.convertToDomain(this)
+        }
 }
