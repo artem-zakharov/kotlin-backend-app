@@ -1,6 +1,7 @@
 package com.azakharov.employeeapp.rest.util.converter
 
 import com.azakharov.employeeapp.domain.Employee
+import com.azakharov.employeeapp.domain.EmployeeId
 import com.azakharov.employeeapp.rest.dto.EmployeeDto
 import com.azakharov.employeeapp.rest.view.EmployeeView
 import javax.inject.Inject
@@ -19,19 +20,17 @@ class EmployeeAllSideDomainConverter @Inject constructor(
         private const val POSITION_DTO_FIELD_NAME = "positionDto"
     }
 
-    override fun convertToDomain(dto: EmployeeDto): Employee {
-        val id = if (dto.id != null) EmployeeId(dto.id) else null
+    override fun convertToDomain(dto: EmployeeDto) = Employee(
+        dto.id?.let { EmployeeId(it) },
+        safelyPerformValue(dto.firstName, FIRST_NAME_FIELD_NAME),
+        safelyPerformValue(dto.surname, SURNAME_FIELD_NAME),
+        positionConverter.convertToDomain(safelyPerformValue(dto.positionDto, POSITION_DTO_FIELD_NAME))
+    )
 
-        val firstName = safelyPerformValue(dto.firstName, FIRST_NAME_FIELD_NAME)
-        val surname = safelyPerformValue(dto.surname, SURNAME_FIELD_NAME)
-        val positionDto = safelyPerformValue(dto.positionDto, POSITION_DTO_FIELD_NAME)
-
-        return Employee(id, firstName, surname, positionConverter.convertToDomain(positionDto))
-    }
-
-    override fun convertToView(domain: Employee): EmployeeView {
-        val id = if (domain.id != null) domain.id!!.value else error("Employee ID can't be null during converting to view")
-        val positionDto = positionConverter.convertToView(domain.position)
-        return EmployeeView(id, domain.firstName, domain.surname, positionDto)
-    }
+    override fun convertToView(domain: Employee) = EmployeeView(
+        domain.id?.value ?: error("Employee ID can't be null during converting to view"),
+        domain.firstName,
+        domain.surname,
+        positionConverter.convertToView(domain.position)
+    )
 }

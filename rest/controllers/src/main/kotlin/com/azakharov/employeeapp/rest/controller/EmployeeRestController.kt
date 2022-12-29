@@ -2,6 +2,7 @@ package com.azakharov.employeeapp.rest.controller
 
 import com.azakharov.employeeapp.api.EmployeeController
 import com.azakharov.employeeapp.domain.Employee
+import com.azakharov.employeeapp.domain.EmployeeId
 import com.azakharov.employeeapp.rest.dto.EmployeeDto
 import com.azakharov.employeeapp.rest.util.converter.EmployeeAllSideDomainConverter
 import com.azakharov.employeeapp.rest.view.EmployeeView
@@ -17,23 +18,19 @@ class EmployeeRestController @Inject constructor(
     private val employeeConverter: EmployeeAllSideDomainConverter
 ) : EmployeeController<EmployeeDto, EmployeeView> {
 
-    override fun get(id: Long): EmployeeView? {
-        val employee = employeeService.find(EmployeeId(id))
-        return if (employee != null) employeeConverter.convertToView(employee) else null
-    }
+    override fun get(id: Long): EmployeeView? =
+        employeeService.find(EmployeeId(id)).takeIf { it != null }?.let {
+            employeeConverter.convertToView(it)
+        }
 
-    override fun getAll(): List<EmployeeView> = employeeService.findAll().map(employeeConverter::convertToView)
+    override fun getAll(): List<EmployeeView> = employeeService.findAll().map { employeeConverter.convertToView(it) }
 
-    override fun save(dto: EmployeeDto): EmployeeView = processUpsert(employeeService::save, dto)
+    override fun save(dto: EmployeeDto): EmployeeView = processUpsert(dto) { employeeService.save(it) }
 
-    override fun update(dto: EmployeeDto): EmployeeView = processUpsert(employeeService::update, dto)
+    override fun update(dto: EmployeeDto): EmployeeView = processUpsert(dto) { employeeService.update(it) }
 
     override fun delete(id: Long) = employeeService.delete(EmployeeId(id))
 
-    private fun processUpsert(upsert: (saving: Employee) -> Employee,
-                              employeeDto: EmployeeDto): EmployeeView {
-        val employee = employeeConverter.convertToDomain(employeeDto)
-        val savedEmployee = upsert(employee)
-        return employeeConverter.convertToView(savedEmployee)
-    }
+    private fun processUpsert(employeeDto: EmployeeDto, upsert: (saving: Employee) -> Employee): EmployeeView =
+        employeeConverter.convertToDomain(employeeDto).let(upsert).let { employeeConverter.convertToView(it) }
 }
