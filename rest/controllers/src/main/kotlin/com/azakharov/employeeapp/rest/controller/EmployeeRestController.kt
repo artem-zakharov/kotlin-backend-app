@@ -2,7 +2,6 @@ package com.azakharov.employeeapp.rest.controller
 
 import com.azakharov.employeeapp.api.EmployeeController
 import com.azakharov.employeeapp.domain.Employee
-import com.azakharov.employeeapp.domain.id.EmployeeId
 import com.azakharov.employeeapp.rest.dto.EmployeeDto
 import com.azakharov.employeeapp.rest.util.converter.EmployeeAllSideDomainConverter
 import com.azakharov.employeeapp.rest.view.EmployeeView

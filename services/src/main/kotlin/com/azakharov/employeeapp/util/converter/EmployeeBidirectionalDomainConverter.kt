@@ -1,7 +1,6 @@
 package com.azakharov.employeeapp.util.converter
 
 import com.azakharov.employeeapp.domain.Employee
-import com.azakharov.employeeapp.domain.id.EmployeeId
 import com.azakharov.employeeapp.repository.jpa.entity.EmployeeEntity
 import javax.inject.Inject
 

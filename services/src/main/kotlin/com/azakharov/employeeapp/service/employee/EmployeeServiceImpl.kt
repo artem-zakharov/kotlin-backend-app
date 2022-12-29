@@ -2,7 +2,6 @@ package com.azakharov.employeeapp.service.employee
 
 import com.azakharov.employeeapp.domain.Employee
 import com.azakharov.employeeapp.domain.EmployeePosition
-import com.azakharov.employeeapp.domain.id.EmployeeId
 import com.azakharov.employeeapp.repository.jpa.EmployeeRepository
 import com.azakharov.employeeapp.repository.jpa.entity.EmployeeEntity
 import com.azakharov.employeeapp.service.employeeposition.EmployeePositionService
