@@ -62,13 +62,13 @@ class RestSparkModule : AbstractModule() {
 
     private fun bindEmployeePositionController() {
         super.bind(EmployeePositionService::class.java).to(EmployeePositionServiceImpl::class.java)
-        super.bind(object: TypeLiteral<EmployeePositionController<EmployeePositionDto, EmployeePositionView>>(){})
-             .to(EmployeePositionRestController::class.java)
+        super.bind(object : TypeLiteral<EmployeePositionController<EmployeePositionDto, EmployeePositionView>>() {})
+            .to(EmployeePositionRestController::class.java)
     }
 
     private fun bindEmployeeController() {
         super.bind(EmployeeService::class.java).to(EmployeeServiceImpl::class.java)
-        super.bind(object: TypeLiteral<EmployeeController<EmployeeDto, EmployeeView>>(){})
-             .to(EmployeeRestController::class.java)
+        super.bind(object : TypeLiteral<EmployeeController<EmployeeDto, EmployeeView>>() {})
+            .to(EmployeeRestController::class.java)
     }
 }

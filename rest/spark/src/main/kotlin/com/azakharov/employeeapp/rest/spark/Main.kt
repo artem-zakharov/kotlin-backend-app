@@ -6,33 +6,33 @@ import com.azakharov.employeeapp.rest.spark.proxy.EmployeeRestSparkProxyControll
 import com.google.inject.Guice
 
 fun main() {
-    val injector = Guice.createInjector(RestSparkModule())
-
-    initEmployeePositionEndpoints(injector.getInstance(EmployeePositionRestSparkProxyController::class.java))
-    initEmployeeEndpoints(injector.getInstance(EmployeeRestSparkProxyController::class.java))
-    initExceptionHandlers(injector.getInstance(SparkExceptionHandler::class.java))
+    Guice.createInjector(RestSparkModule()).run {
+        getInstance(EmployeePositionRestSparkProxyController::class.java).initEmployeePositionEndpoints()
+        getInstance(EmployeeRestSparkProxyController::class.java).initEmployeeEndpoints()
+        getInstance(SparkExceptionHandler::class.java).initExceptionHandlers()
+    }
 }
 
-private fun initEmployeePositionEndpoints(employeePositionController: EmployeePositionRestSparkProxyController) {
-    employeePositionController.getEmployeePosition()
-    employeePositionController.getAllEmployeePositions()
-    employeePositionController.save()
-    employeePositionController.update()
-    employeePositionController.delete()
+private fun EmployeePositionRestSparkProxyController.initEmployeePositionEndpoints() = this.apply {
+    getEmployeePosition()
+    getAllEmployeePositions()
+    save()
+    update()
+    delete()
 }
 
-private fun initEmployeeEndpoints(employeeController: EmployeeRestSparkProxyController) {
-    employeeController.getEmployee()
-    employeeController.getAllEmployees()
-    employeeController.save()
-    employeeController.update()
-    employeeController.delete()
+private fun EmployeeRestSparkProxyController.initEmployeeEndpoints() = this.apply {
+    getEmployee()
+    getAllEmployees()
+    save()
+    update()
+    delete()
 }
 
-private fun initExceptionHandlers(handler: SparkExceptionHandler) {
-    handler.handleInvalidDomainException()
-    handler.handleInvalidTypedIdException()
-    handler.handleEmployeeServiceException()
-    handler.handleIllegalStateException()
-    handler.handleUnexpectedException()
+private fun SparkExceptionHandler.initExceptionHandlers() = this.apply {
+    handleInvalidDomainException()
+    handleInvalidTypedIdException()
+    handleEmployeeServiceException()
+    handleIllegalStateException()
+    handleUnexpectedException()
 }

@@ -4,8 +4,8 @@ import com.azakharov.employeeapp.api.EmployeeController
 import com.azakharov.employeeapp.rest.dto.EmployeeDto
 import com.azakharov.employeeapp.rest.util.json.JsonUtil
 import com.azakharov.employeeapp.rest.view.EmployeeView
-import javax.inject.Inject
 import spark.Spark
+import javax.inject.Inject
 
 /**
  * Kotlin Copy of
@@ -28,18 +28,28 @@ class EmployeeRestSparkProxyController @Inject constructor(
         private const val DOMAIN_NAME = "Employee"
     }
 
-    fun getEmployee() =
-        Spark.get(GET_EMPLOYEE_ENDPOINT, performGetViewEndpointLogic(employeeController::get, DOMAIN_NAME))
+    fun getEmployee() = Spark.get(
+        GET_EMPLOYEE_ENDPOINT,
+        performGetViewEndpointLogic(DOMAIN_NAME) { employeeController.get(it) }
+    )
 
-    fun getAllEmployees() =
-        Spark.get(GET_ALL_EMPLOYEES_ENDPOINT, performGetAllViewsEndpointLogic(employeeController::getAll))
+    fun getAllEmployees() = Spark.get(
+        GET_ALL_EMPLOYEES_ENDPOINT,
+        performGetAllViewsEndpointLogic { employeeController.getAll() }
+    )
 
-    fun save() =
-        Spark.post(SAVE_EMPLOYEE_ENDPOINT, performUpsertEndpointLogic(employeeController::save, EmployeeDto::class.java))
+    fun save() = Spark.post(
+        SAVE_EMPLOYEE_ENDPOINT,
+        performUpsertEndpointLogic(EmployeeDto::class.java) { employeeController.save(it) }
+    )
 
-    fun update() =
-        Spark.put(UPDATE_EMPLOYEE_ENDPOINT, performUpsertEndpointLogic(employeeController::update, EmployeeDto::class.java))
+    fun update() = Spark.put(
+        UPDATE_EMPLOYEE_ENDPOINT,
+        performUpsertEndpointLogic(EmployeeDto::class.java) { employeeController.update(it) }
+    )
 
-    fun delete() =
-        Spark.delete(DELETE_EMPLOYEE_ENDPOINT, performDeleteDomainEndpointLogic(employeeController::delete, DOMAIN_NAME))
+    fun delete() = Spark.delete(
+        DELETE_EMPLOYEE_ENDPOINT,
+        performDeleteDomainEndpointLogic(DOMAIN_NAME) { employeeController.delete(it) }
+    )
 }

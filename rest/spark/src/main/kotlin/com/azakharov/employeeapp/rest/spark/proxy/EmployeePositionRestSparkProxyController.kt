@@ -4,8 +4,8 @@ import com.azakharov.employeeapp.api.EmployeePositionController
 import com.azakharov.employeeapp.rest.dto.EmployeePositionDto
 import com.azakharov.employeeapp.rest.util.json.JsonUtil
 import com.azakharov.employeeapp.rest.view.EmployeePositionView
-import javax.inject.Inject
 import spark.Spark
+import javax.inject.Inject
 
 /**
  * Kotlin Copy of
@@ -28,18 +28,28 @@ class EmployeePositionRestSparkProxyController @Inject constructor(
         private const val DOMAIN_NAME = "Position"
     }
 
-    fun getEmployeePosition() =
-        Spark.get(GET_EMPLOYEE_POSITION_ENDPOINT, performGetViewEndpointLogic(employeePositionController::get, DOMAIN_NAME))
+    fun getEmployeePosition() = Spark.get(
+        GET_EMPLOYEE_POSITION_ENDPOINT,
+        performGetViewEndpointLogic(DOMAIN_NAME) { employeePositionController.get(it) }
+    )
 
-    fun getAllEmployeePositions() =
-        Spark.get(GET_ALL_EMPLOYEE_POSITIONS_ENDPOINT, performGetAllViewsEndpointLogic(employeePositionController::getAll))
+    fun getAllEmployeePositions() = Spark.get(
+        GET_ALL_EMPLOYEE_POSITIONS_ENDPOINT,
+        performGetAllViewsEndpointLogic { employeePositionController.getAll() }
+    )
 
-    fun save() = Spark.post(SAVE_EMPLOYEE_POSITION_ENDPOINT,
-                            performUpsertEndpointLogic(employeePositionController::save,  EmployeePositionDto::class.java))
+    fun save() = Spark.post(
+        SAVE_EMPLOYEE_POSITION_ENDPOINT,
+        performUpsertEndpointLogic(EmployeePositionDto::class.java) { employeePositionController.save(it) }
+    )
 
-    fun update() = Spark.put(UPDATE_EMPLOYEE_POSITION_ENDPOINT,
-                             performUpsertEndpointLogic(employeePositionController::update,  EmployeePositionDto::class.java))
+    fun update() = Spark.put(
+        UPDATE_EMPLOYEE_POSITION_ENDPOINT,
+        performUpsertEndpointLogic(EmployeePositionDto::class.java) { employeePositionController.update(it) }
+    )
 
-    fun delete() = Spark.delete(DELETE_EMPLOYEE_POSITION_ENDPOINT,
-                                performDeleteDomainEndpointLogic(employeePositionController::delete, DOMAIN_NAME))
+    fun delete() = Spark.delete(
+        DELETE_EMPLOYEE_POSITION_ENDPOINT,
+        performDeleteDomainEndpointLogic(DOMAIN_NAME) { employeePositionController.delete(it) }
+    )
 }
