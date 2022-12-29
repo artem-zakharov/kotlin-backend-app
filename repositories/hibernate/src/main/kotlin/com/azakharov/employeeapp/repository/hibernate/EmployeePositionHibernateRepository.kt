@@ -2,9 +2,9 @@ package com.azakharov.employeeapp.repository.hibernate
 
 import com.azakharov.employeeapp.repository.jpa.EmployeePositionRepository
 import com.azakharov.employeeapp.repository.jpa.entity.EmployeePositionEntity
-import javax.inject.Inject
 import org.hibernate.Session
 import org.slf4j.LoggerFactory
+import javax.inject.Inject
 
 /**
  * Kotlin Copy of
@@ -20,27 +20,24 @@ class EmployeePositionHibernateRepository @Inject constructor(
     }
 
     override fun find(id: Long): EmployeePositionEntity? {
-        LOGGER.debug("Finding EmployeePositionEntity in database started for id: $id")
-        val position = super.find(id)
-        LOGGER.trace("EmployeePositionEntity detailed printing: $position")
-
-        return position
+        LOGGER.debug("Finding EmployeePositionEntity started, id: $id")
+        return super.find(id).also {
+            LOGGER.trace("EmployeePositionEntity detailed printing: $it")
+        }
     }
 
     override fun findAll(): List<EmployeePositionEntity> {
-        LOGGER.debug("Finding all EmployeePositionEntity in database started")
-        val positions = super.findAll()
-        LOGGER.trace("EmployeePositionEntities detailed printing: $positions")
-
-        return positions
+        LOGGER.debug("Finding all EmployeePositionEntities started")
+        return super.findAll().also {
+            LOGGER.trace("EmployeePositionEntities detailed printing: $it")
+        }
     }
 
     override fun save(entity: EmployeePositionEntity): EmployeePositionEntity {
-        LOGGER.debug("EmployeePositionEntity saving started, position: $entity")
-        val saved = super.save(entity)
-        LOGGER.debug("EmployeePositionEntity saving successfully ended, generated id: ${saved.id}")
-
-        return saved
+        LOGGER.debug("Saving EmployeePositionEntity started, position: $entity")
+        return super.save(entity).also {
+            LOGGER.debug("EmployeePositionEntity saving successfully ended, generated id: ${it.id}")
+        }
     }
 
     override fun update(entity: EmployeePositionEntity): EmployeePositionEntity {

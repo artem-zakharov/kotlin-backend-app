@@ -26,20 +26,14 @@ class HibernateModule : AbstractModule() {
 
     @Provides
     @Singleton
-    fun provideHibernateConfiguration(): Configuration {
-        val configuration = Configuration()
-
-        configuration.setProperty(JDBC_URL_KEY, ENV_DATASOURCE_URL)
-        configuration.setProperty(JDBC_USERNAME_KEY, ENV_DATASOURCE_USERNAME)
-        configuration.setProperty(JDBC_PASSWORD_KEY, ENV_DATASOURCE_PASSWORD)
-
-        return configuration.configure()
+    fun provideHibernateConfiguration() = Configuration().apply {
+        setProperty(JDBC_URL_KEY, ENV_DATASOURCE_URL)
+        setProperty(JDBC_USERNAME_KEY, ENV_DATASOURCE_USERNAME)
+        setProperty(JDBC_PASSWORD_KEY, ENV_DATASOURCE_PASSWORD)
     }
 
     @Provides
-    fun provideSession(configuration: Configuration): Session {
-        return configuration.buildSessionFactory().openSession()
-    }
+    fun provideSession(configuration: Configuration): Session = configuration.buildSessionFactory().openSession()
 
     override fun configure() {
         bindHibernateRepositories()

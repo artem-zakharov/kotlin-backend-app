@@ -2,9 +2,9 @@ package com.azakharov.employeeapp.repository.hibernate
 
 import com.azakharov.employeeapp.repository.jpa.EmployeeRepository
 import com.azakharov.employeeapp.repository.jpa.entity.EmployeeEntity
-import javax.inject.Inject
 import org.hibernate.Session
 import org.slf4j.LoggerFactory
+import javax.inject.Inject
 
 /**
  * Kotlin Copy of
@@ -20,26 +20,23 @@ class EmployeeHibernateRepository @Inject constructor(
 
     override fun find(id: Long): EmployeeEntity? {
         LOGGER.debug("Finding EmployeeEntity in database started for id: $id")
-        val employee = super.find(id)
-        LOGGER.trace("EmployeeEntity detailed printing: $employee")
-
-        return employee
+        return super.find(id).also {
+            LOGGER.trace("EmployeeEntity detailed printing: $it")
+        }
     }
 
     override fun findAll(): List<EmployeeEntity> {
         LOGGER.debug("Finding all EmployeeEntity in database started")
-        val employees = super.findAll()
-        LOGGER.trace("EmployeeEntity detailed printing: $employees")
-
-        return employees
+        return super.findAll().also {
+            LOGGER.trace("EmployeeEntity detailed printing: $it")
+        }
     }
 
     override fun save(entity: EmployeeEntity): EmployeeEntity {
         LOGGER.debug("EmployeeEntity saving started, position: $entity")
-        val saved = super.save(entity)
-        LOGGER.debug("EmployeeEntity saving successfully ended, generated id: ${saved.id}")
-
-        return saved
+        return super.save(entity).also {
+            LOGGER.debug("EmployeeEntity saving successfully ended, generated id: ${it.id}")
+        }
     }
 
     override fun update(entity: EmployeeEntity): EmployeeEntity {
