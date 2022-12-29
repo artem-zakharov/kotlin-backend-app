@@ -11,7 +11,7 @@ import com.azakharov.employeeapp.repository.jpa.entity.EmployeePositionEntity
 class EmployeePositionBidirectionalDomainConverter : BidirectionalDomainConverter<EmployeePosition, EmployeePositionEntity> {
 
     override fun convertToDomain(entity: EmployeePositionEntity): EmployeePosition {
-        val idValue = provideNotNullId(entity.id, entity)
+        val idValue = provideId(entity.id, entity)
         return EmployeePosition(EmployeePositionId(idValue), entity.name)
     }
 

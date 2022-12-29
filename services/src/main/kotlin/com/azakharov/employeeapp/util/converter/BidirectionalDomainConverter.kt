@@ -9,3 +9,5 @@ interface BidirectionalDomainConverter<D, E> {
     fun convertToDomain(entity: E): D
     fun convertToEntity(domain: D): E
 }
+
+class BidirectionalDomainConverterException(message: String) : RuntimeException(message)

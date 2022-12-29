@@ -1,6 +1,7 @@
 package com.azakharov.employeeapp.util.converter
 
 import com.azakharov.employeeapp.domain.Employee
+import com.azakharov.employeeapp.domain.EmployeeId
 import com.azakharov.employeeapp.repository.jpa.entity.EmployeeEntity
 import javax.inject.Inject
 
@@ -12,15 +13,17 @@ class EmployeeBidirectionalDomainConverter @Inject constructor(
     private val positionConverter: EmployeePositionBidirectionalDomainConverter
 ) : BidirectionalDomainConverter<Employee, EmployeeEntity> {
 
-    override fun convertToDomain(entity: EmployeeEntity): Employee {
-        val idValue = provideNotNullId(entity.id, entity)
-        val position = positionConverter.convertToDomain(provideNotNullPositionEntity(entity.positionEntity, entity))
-        return Employee(EmployeeId(idValue), entity.firstName, entity.surname, position)
-    }
+    override fun convertToDomain(entity: EmployeeEntity) = Employee(
+        EmployeeId(provideId(entity.id, entity)),
+        entity.firstName,
+        entity.surname,
+        positionConverter.convertToDomain(providePositionEntity(entity.positionEntity, entity))
+    )
 
-    override fun convertToEntity(domain: Employee): EmployeeEntity {
-        val id = if (domain.id != null) domain.id.value else null
-        val positionEntity = positionConverter.convertToEntity(domain.position)
-        return EmployeeEntity(id, domain.firstName, domain.surname, positionEntity)
-    }
+    override fun convertToEntity(domain: Employee) = EmployeeEntity(
+        domain.id?.value,
+        domain.firstName,
+        domain.surname,
+        positionConverter.convertToEntity(domain.position)
+    )
 }
