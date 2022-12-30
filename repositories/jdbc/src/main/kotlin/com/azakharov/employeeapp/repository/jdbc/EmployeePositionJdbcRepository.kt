@@ -2,17 +2,17 @@ package com.azakharov.employeeapp.repository.jdbc
 
 import com.azakharov.employeeapp.repository.jpa.EmployeePositionRepository
 import com.azakharov.employeeapp.repository.jpa.entity.EmployeePositionEntity
-import javax.inject.Inject
-import javax.sql.DataSource
 import org.slf4j.LoggerFactory
 import java.sql.ResultSet
 import java.sql.SQLException
+import javax.inject.Inject
+import javax.sql.DataSource
 
 /**
  * Kotlin Copy of
  * <a href="https://github.com/artemzakharovbelarus/employee-module-app/blob/master/repositories/jdbc/src/main/java/com/azakharov/employeeapp/repository/jdbc/EmployeePositionJdbcRepository.java">https://github.com/artemzakharovbelarus/employee-module-app/blob/master/repositories/jdbc/src/main/java/com/azakharov/employeeapp/repository/jdbc/EmployeePositionJdbcRepository.java</a>
  */
-class EmployeePositionJdbcRepository @Inject constructor (dataSource: DataSource) :
+class EmployeePositionJdbcRepository @Inject constructor(dataSource: DataSource) :
     BaseJdbcRepository<EmployeePositionEntity, Long>(dataSource), EmployeePositionRepository {
 
     companion object {
@@ -30,60 +30,49 @@ class EmployeePositionJdbcRepository @Inject constructor (dataSource: DataSource
         private const val NAME_COLUMN = "name"
     }
 
-    override fun convertEntityToParams(entity: EmployeePositionEntity): List<Any?> {
-        val params = ArrayList<Any?>()
-
-        params.add(entity.name)
-        if (entity.id != null) {
-            params.add(entity.id)
+    override fun EmployeePositionEntity.convertToParams(): List<Any?> = ArrayList<Any?>().apply {
+        add(name)
+        takeIf { id != null }?.let {
+            add(id)
         }
-
-        return params
     }
 
-    override fun constructEntity(resultSet: ResultSet): EmployeePositionEntity {
-        return try {
-            EmployeePositionEntity(resultSet.getLong(ID_COLUMN), resultSet.getString(NAME_COLUMN))
+    override fun ResultSet.constructEntity(): EmployeePositionEntity = try {
+        EmployeePositionEntity(getLong(ID_COLUMN), getString(NAME_COLUMN))
+    } catch (e: SQLException) {
+        LOGGER.error("Exception during extracting data from JDBC result set, message: ${e.message}")
+        LOGGER.debug("Exception during extracting data from JDBC result set", e)
+        throw JdbcRepositoryException("Exception during extracting data from JDBC result set, message: ${e.message}")
+    }
+
+    override fun EmployeePositionEntity.constructSavedEntity(generatedKeys: ResultSet): EmployeePositionEntity =
+        try {
+            this.copy(id = generatedKeys.getInt(ID_COLUMN).toLong())
         } catch (e: SQLException) {
             LOGGER.error("Exception during extracting data from JDBC result set, message: ${e.message}")
             LOGGER.debug("Exception during extracting data from JDBC result set", e)
             throw JdbcRepositoryException("Exception during extracting data from JDBC result set, message: ${e.message}")
         }
-    }
-
-    override fun constructSavedEntity(generatedKeys: ResultSet, saved: EmployeePositionEntity): EmployeePositionEntity {
-        return try {
-            val id = generatedKeys.getInt(ID_COLUMN)
-            EmployeePositionEntity(id.toLong(), saved.name)
-        } catch (e: SQLException) {
-            LOGGER.error("Exception during extracting data from JDBC result set, message: ${e.message}")
-            LOGGER.debug("Exception during extracting data from JDBC result set", e)
-            throw JdbcRepositoryException("Exception during extracting data from JDBC result set, message: ${e.message}")
-        }
-    }
 
     override fun find(id: Long): EmployeePositionEntity? {
         LOGGER.debug("Finding EmployeePositionEntity in database started for id: $id")
-        val position = super.find(FIND_EMPLOYEE_POSITION_BY_ID_SQL, id)
-        LOGGER.trace("EmployeePositionEntity detailed printing: $position")
-
-        return position
+        return super.find(FIND_EMPLOYEE_POSITION_BY_ID_SQL, id).also {
+            LOGGER.trace("EmployeePositionEntity detailed printing: $it")
+        }
     }
 
     override fun findAll(): List<EmployeePositionEntity> {
         LOGGER.debug("Finding all EmployeePositionEntity in database started")
-        val positions = super.findAll(FIND_ALL_EMPLOYEE_POSITIONS_SQL)
-        LOGGER.trace("EmployeePositionEntities detailed printing: $positions")
-
-        return positions
+        return super.findAll(FIND_ALL_EMPLOYEE_POSITIONS_SQL).also {
+            LOGGER.trace("EmployeePositionEntities detailed printing: $it")
+        }
     }
 
     override fun save(entity: EmployeePositionEntity): EmployeePositionEntity {
         LOGGER.debug("EmployeePositionEntity saving started, position: $entity")
-        val saved = super.save(SAVE_EMPLOYEE_POSITION_SQL, entity)
-        LOGGER.debug("EmployeePositionEntity saving successfully ended, generated id: ${saved.id}")
-
-        return saved
+        return super.save(SAVE_EMPLOYEE_POSITION_SQL, entity).also {
+            LOGGER.debug("EmployeePositionEntity saving successfully ended, generated id: $it")
+        }
     }
 
     override fun update(entity: EmployeePositionEntity): EmployeePositionEntity {

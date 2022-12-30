@@ -23,21 +23,15 @@ class JdbcModule : AbstractModule() {
 
     @Provides
     @Singleton
-    fun provideHikariConfig(): HikariConfig {
-        val hikariConfig = HikariConfig()
-
-        hikariConfig.jdbcUrl = ENV_DATASOURCE_URL
-        hikariConfig.username = ENV_DATASOURCE_USERNAME
-        hikariConfig.password = ENV_DATASOURCE_PASSWORD
-
-        return hikariConfig
+    fun provideHikariConfig(): HikariConfig = HikariConfig().apply {
+        jdbcUrl = ENV_DATASOURCE_URL
+        username = ENV_DATASOURCE_USERNAME
+        password = ENV_DATASOURCE_PASSWORD
     }
 
     @Provides
     @Singleton
-    fun provideDataSource(hikariConfig: HikariConfig): DataSource {
-        return HikariDataSource(hikariConfig)
-    }
+    fun provideDataSource(hikariConfig: HikariConfig): DataSource = HikariDataSource(hikariConfig)
 
     override fun configure() {
         bindJdbcRepositories()
