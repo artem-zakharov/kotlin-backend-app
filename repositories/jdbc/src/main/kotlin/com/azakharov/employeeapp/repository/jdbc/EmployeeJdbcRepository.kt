@@ -44,38 +44,34 @@ class EmployeeJdbcRepository @Inject constructor(dataSource: DataSource) :
 
     override fun EmployeeEntity.convertToParams(): List<Any?> = ArrayList<Any?>().apply {
         addAll(listOf(firstName, surname))
-        takeIf { positionEntity != null }?.let {
-            add(positionEntity!!.id)
-        }.takeIf { positionEntity?.id != null }?.let {
-            add(id)
+        positionEntity.takeIf { it != null }?.let {
+            add(it.id)
         }
     }
 
-    override fun ResultSet.constructEntity(): EmployeeEntity =
-        try {
-            EmployeeEntity(
-                getLong(ID_COLUMN),
-                getString(EMPLOYEE_FIRST_NAME_COLUMN),
-                getString(EMPLOYEE_SURNAME_COLUMN),
-                EmployeePositionEntity(
-                    getLong(POSITION_ID_COLUMN),
-                    getString(EMPLOYEE_POSITION_NAME_COLUMN)
-                )
+    override fun ResultSet.constructEntity(): EmployeeEntity = try {
+        EmployeeEntity(
+            getLong(ID_COLUMN),
+            getString(EMPLOYEE_FIRST_NAME_COLUMN),
+            getString(EMPLOYEE_SURNAME_COLUMN),
+            EmployeePositionEntity(
+                getLong(POSITION_ID_COLUMN),
+                getString(EMPLOYEE_POSITION_NAME_COLUMN)
             )
-        } catch (e: SQLException) {
-            LOGGER.error("Exception during extracting data from JDBC result set, message: ${e.message}")
-            LOGGER.debug("Exception during extracting data from JDBC result set", e)
-            throw JdbcRepositoryException("Exception during extracting data from JDBC result set, message: ${e.message}")
-        }
+        )
+    } catch (e: SQLException) {
+        LOGGER.error("Exception during extracting data from JDBC result set, message: ${e.message}")
+        LOGGER.debug("Exception during extracting data from JDBC result set", e)
+        throw JdbcRepositoryException("Exception during extracting data from JDBC result set, message: ${e.message}")
+    }
 
-    override fun EmployeeEntity.constructSavedEntity(generatedKeys: ResultSet): EmployeeEntity =
-        try {
-            this.copy(id = generatedKeys.getInt(ID_COLUMN).toLong())
-        } catch (e: SQLException) {
-            LOGGER.error("Exception during extracting data from JDBC result set, message: ${e.message}")
-            LOGGER.debug("Exception during extracting data from JDBC result set", e)
-            throw JdbcRepositoryException("Exception during extracting data from JDBC result set, message: ${e.message}")
-        }
+    override fun EmployeeEntity.constructSavedEntity(generatedKeys: ResultSet): EmployeeEntity = try {
+        this.copy(id = generatedKeys.getInt(ID_COLUMN).toLong())
+    } catch (e: SQLException) {
+        LOGGER.error("Exception during extracting data from JDBC result set, message: ${e.message}")
+        LOGGER.debug("Exception during extracting data from JDBC result set", e)
+        throw JdbcRepositoryException("Exception during extracting data from JDBC result set, message: ${e.message}")
+    }
 
     override fun find(id: Long): EmployeeEntity? {
         LOGGER.debug("Finding EmployeeEntity in database started for id: $id")

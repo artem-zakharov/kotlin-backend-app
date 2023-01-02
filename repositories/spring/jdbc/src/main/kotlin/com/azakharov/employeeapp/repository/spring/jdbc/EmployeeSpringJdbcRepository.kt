@@ -3,11 +3,11 @@ package com.azakharov.employeeapp.repository.spring.jdbc
 import com.azakharov.employeeapp.repository.jpa.EmployeeRepository
 import com.azakharov.employeeapp.repository.jpa.entity.EmployeeEntity
 import com.azakharov.employeeapp.repository.jpa.entity.EmployeePositionEntity
-import javax.inject.Inject
 import org.slf4j.LoggerFactory
 import org.springframework.jdbc.core.JdbcTemplate
 import java.sql.ResultSet
 import java.sql.SQLException
+import javax.inject.Inject
 
 class EmployeeSpringJdbcRepository @Inject constructor(
     jdbcTemplate: JdbcTemplate
@@ -18,16 +18,16 @@ class EmployeeSpringJdbcRepository @Inject constructor(
 
         /** SQL queries  */
         private const val FIND_EMPLOYEE_BY_ID_SQL = "SELECT e.id, e.first_name, e.surname, " +
-                                                    "p.id AS \"p.id\", p.name AS \"p.name\" " +
-                                                    "FROM employees e INNER JOIN employee_positions p " +
-                                                    "ON e.position_id = p.id WHERE e.id = ?"
+            "p.id AS \"p.id\", p.name AS \"p.name\" " +
+            "FROM employees e INNER JOIN employee_positions p " +
+            "ON e.position_id = p.id WHERE e.id = ?"
         private const val FIND_ALL_EMPLOYEES_SQL = "SELECT e.id, e.first_name, e.surname, p.id AS \"p.id\", p.name " +
-                                                   "AS \"p.name\" FROM employees e " +
-                                                   "INNER JOIN employee_positions p ON e.position_id = p.id"
+            "AS \"p.name\" FROM employees e " +
+            "INNER JOIN employee_positions p ON e.position_id = p.id"
         private const val SAVE_EMPLOYEE_SQL = "INSERT INTO employees (first_name, surname, position_id)" +
-                                              "VALUES (?, ?, ?)"
+            "VALUES (?, ?, ?)"
         private const val UPDATE_EMPLOYEE_SQL = "UPDATE employees SET first_name = ?, surname = ?, position_id = ? " +
-                                                "WHERE id = ?"
+            "WHERE id = ?"
         private const val DELETE_EMPLOYEE_SQL = "DELETE FROM employees WHERE id = ?"
 
         /** employees and employee_positions column names  */
@@ -38,39 +38,31 @@ class EmployeeSpringJdbcRepository @Inject constructor(
         private const val EMPLOYEE_POSITION_NAME_COLUMN = "p.name"
     }
 
-    override fun convertToParams(entity: EmployeeEntity): List<Any?> {
-        val params = ArrayList<Any?>()
-        params.add(entity.firstName)
-        params.add(entity.surname)
+    override fun EmployeeEntity.convertToParams(): List<Any?> = ArrayList<Any?>().apply {
+        add(firstName)
+        add(surname)
 
-        if (entity.positionEntity != null) {
-            params.add(entity.positionEntity!!.id)
-        }
-
-        if (entity.id != null) {
-            params.add(entity.id)
-        }
-
-        return params
+        id.takeIf { it != null }?.let { add(it) }
+        positionEntity.takeIf { it != null }?.let { add(it.id) }
     }
 
-    override fun constructEntity(resultSet: ResultSet, rowNum: Int): EmployeeEntity {
-        return try {
-            val position = EmployeePositionEntity(resultSet.getLong(POSITION_ID_COLUMN),
-                                                  resultSet.getString(EMPLOYEE_POSITION_NAME_COLUMN))
-            EmployeeEntity(resultSet.getLong(ID_COLUMN),
-                           resultSet.getString(EMPLOYEE_FIRST_NAME_COLUMN),
-                           resultSet.getString(EMPLOYEE_SURNAME_COLUMN),
-                           position)
-        } catch (e: SQLException) {
-            LOGGER.error("Exception during extracting data from JDBC result set, message: {}", e.message)
-            LOGGER.debug("Exception during extracting data from JDBC result set", e)
-            throw SpringJdbcRepositoryException("Exception during extracting data from JDBC result set, message: ${e.message}")
-        }
+    override fun constructEntity(resultSet: ResultSet, rowNum: Int): EmployeeEntity = try {
+        EmployeeEntity(
+            resultSet.getLong(ID_COLUMN),
+            resultSet.getString(EMPLOYEE_FIRST_NAME_COLUMN),
+            resultSet.getString(EMPLOYEE_SURNAME_COLUMN),
+            EmployeePositionEntity(
+                resultSet.getLong(POSITION_ID_COLUMN),
+                resultSet.getString(EMPLOYEE_POSITION_NAME_COLUMN)
+            )
+        )
+    } catch (e: SQLException) {
+        LOGGER.error("Exception during extracting data from JDBC result set, message: {}", e.message)
+        LOGGER.debug("Exception during extracting data from JDBC result set", e)
+        throw SpringJdbcRepositoryException("Exception during extracting data from JDBC result set, message: ${e.message}")
     }
 
-    override fun constructSavedEntity(id: Long, saved: EmployeeEntity): EmployeeEntity =
-        EmployeeEntity(id, saved.firstName, saved.surname, saved.positionEntity)
+    override fun EmployeeEntity.constructSavedEntity(id: Long): EmployeeEntity = this.copy(id = id)
 
     override fun find(id: Long): EmployeeEntity? {
         LOGGER.debug("Finding EmployeeEntity in database started for id: $id")
