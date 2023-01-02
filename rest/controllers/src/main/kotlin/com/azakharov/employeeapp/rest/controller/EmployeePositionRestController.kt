@@ -14,28 +14,28 @@ import javax.inject.Inject
  * <a href="https://github.com/artemzakharovbelarus/employee-module-app/blob/master/rest/controllers/src/main/java/com/azakharov/employeeapp/rest/controller/EmployeePositionRestController.java">https://github.com/artemzakharovbelarus/employee-module-app/blob/master/rest/controllers/src/main/java/com/azakharov/employeeapp/rest/controller/EmployeePositionRestController.java</a>
  */
 class EmployeePositionRestController @Inject constructor(
-    private val positionService: EmployeePositionService,
-    private val positionConverter: EmployeePositionAllSideDomainConverter
+    private val find: (EmployeePositionId) -> EmployeePosition?,
+    private val findAll: () -> List<EmployeePosition>,
+    private val save: (EmployeePosition) -> EmployeePosition,
+    private val update: (EmployeePosition) -> EmployeePosition,
+    private val delete: (EmployeePositionId) -> Unit,
+    private val convertToView: (EmployeePosition) -> EmployeePositionView,
+    private val convertToDomain: (EmployeePositionDto) -> EmployeePosition
 ) : EmployeePositionController<EmployeePositionDto, EmployeePositionView> {
 
     override fun get(id: Long): EmployeePositionView? =
-        positionService.find(EmployeePositionId(id)).takeIf { it != null }?.let {
-            positionConverter.convertToView(it)
-        }
+        find(EmployeePositionId(id)).takeIf { it != null }?.let { convertToView(it) }
 
-    override fun getAll(): List<EmployeePositionView> =
-        positionService.findAll().map { positionConverter.convertToView(it) }
+    override fun getAll(): List<EmployeePositionView> = findAll().map { convertToView(it) }
 
-    override fun save(dto: EmployeePositionDto): EmployeePositionView = processUpsert(dto) { positionService.save(it) }
+    override fun save(dto: EmployeePositionDto): EmployeePositionView = processUpsert(dto) { save(it) }
 
-    override fun update(dto: EmployeePositionDto): EmployeePositionView =
-        processUpsert(dto) { positionService.update(it) }
+    override fun update(dto: EmployeePositionDto): EmployeePositionView = processUpsert(dto) { update(it) }
 
-    override fun delete(id: Long) = positionService.delete(EmployeePositionId(id))
+    override fun delete(id: Long) = delete(EmployeePositionId(id))
 
     private fun processUpsert(
         positionDto: EmployeePositionDto,
         upsert: (saving: EmployeePosition) -> EmployeePosition
-    ): EmployeePositionView =
-        positionConverter.convertToDomain(positionDto).let(upsert).let { positionConverter.convertToView(it) }
+    ): EmployeePositionView = convertToDomain(positionDto).let(upsert).run(convertToView)
 }
