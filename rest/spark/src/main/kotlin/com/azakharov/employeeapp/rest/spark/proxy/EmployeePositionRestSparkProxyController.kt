@@ -1,6 +1,5 @@
 package com.azakharov.employeeapp.rest.spark.proxy
 
-import com.azakharov.employeeapp.api.EmployeePositionController
 import com.azakharov.employeeapp.rest.dto.EmployeePositionDto
 import com.azakharov.employeeapp.rest.util.json.JsonUtil
 import com.azakharov.employeeapp.rest.view.EmployeePositionView
@@ -12,7 +11,11 @@ import javax.inject.Inject
  * <a href="https://github.com/artemzakharovbelarus/employee-module-app/blob/master/rest/spark/src/main/java/com/azakharov/employeeapp/rest/spark/proxy/EmployeePositionSparkProxyRestController.java">https://github.com/artemzakharovbelarus/employee-module-app/blob/master/rest/spark/src/main/java/com/azakharov/employeeapp/rest/spark/proxy/EmployeePositionSparkProxyRestController.java</a>
  */
 class EmployeePositionRestSparkProxyController @Inject constructor(
-    private val employeePositionController: EmployeePositionController<EmployeePositionDto, EmployeePositionView>,
+    private val getPosition: (Long) -> EmployeePositionView?,
+    private val getAllPositions: () -> List<EmployeePositionView>,
+    private val savePosition: (EmployeePositionDto) -> EmployeePositionView,
+    private val updatePosition: (EmployeePositionDto) -> EmployeePositionView,
+    private val deletePosition: (Long) -> Unit,
     jsonUtil: JsonUtil
 ) : BaseSparkRestController<EmployeePositionDto, EmployeePositionView>(jsonUtil) {
 
@@ -30,26 +33,26 @@ class EmployeePositionRestSparkProxyController @Inject constructor(
 
     fun getEmployeePosition() = Spark.get(
         GET_EMPLOYEE_POSITION_ENDPOINT,
-        performGetViewEndpointLogic(DOMAIN_NAME) { employeePositionController.get(it) }
+        performGetViewEndpointLogic(DOMAIN_NAME) { getPosition(it) }
     )
 
     fun getAllEmployeePositions() = Spark.get(
         GET_ALL_EMPLOYEE_POSITIONS_ENDPOINT,
-        performGetAllViewsEndpointLogic { employeePositionController.getAll() }
+        performGetAllViewsEndpointLogic { getAllPositions() }
     )
 
     fun save() = Spark.post(
         SAVE_EMPLOYEE_POSITION_ENDPOINT,
-        performUpsertEndpointLogic(EmployeePositionDto::class.java) { employeePositionController.save(it) }
+        performUpsertEndpointLogic(EmployeePositionDto::class.java) { savePosition(it) }
     )
 
     fun update() = Spark.put(
         UPDATE_EMPLOYEE_POSITION_ENDPOINT,
-        performUpsertEndpointLogic(EmployeePositionDto::class.java) { employeePositionController.update(it) }
+        performUpsertEndpointLogic(EmployeePositionDto::class.java) { updatePosition(it) }
     )
 
     fun delete() = Spark.delete(
         DELETE_EMPLOYEE_POSITION_ENDPOINT,
-        performDeleteDomainEndpointLogic(DOMAIN_NAME) { employeePositionController.delete(it) }
+        performDeleteDomainEndpointLogic(DOMAIN_NAME) { deletePosition(it) }
     )
 }

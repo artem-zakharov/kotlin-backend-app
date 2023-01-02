@@ -1,6 +1,5 @@
 package com.azakharov.employeeapp.rest.spark.proxy
 
-import com.azakharov.employeeapp.api.EmployeeController
 import com.azakharov.employeeapp.rest.dto.EmployeeDto
 import com.azakharov.employeeapp.rest.util.json.JsonUtil
 import com.azakharov.employeeapp.rest.view.EmployeeView
@@ -12,7 +11,11 @@ import javax.inject.Inject
  * <a href="https://github.com/artemzakharovbelarus/employee-module-app/blob/master/rest/spark/src/main/java/com/azakharov/employeeapp/rest/spark/proxy/EmployeeSparkProxyRestController.java">https://github.com/artemzakharovbelarus/employee-module-app/blob/master/rest/spark/src/main/java/com/azakharov/employeeapp/rest/spark/proxy/EmployeeSparkProxyRestController.java</a>
  */
 class EmployeeRestSparkProxyController @Inject constructor(
-    private val employeeController: EmployeeController<EmployeeDto, EmployeeView>,
+    private val getEmployee: (Long) -> EmployeeView?,
+    private val getAll: () -> List<EmployeeView>,
+    private val saveEmployee: (EmployeeDto) -> EmployeeView,
+    private val updateEmployee: (EmployeeDto) -> EmployeeView,
+    private val deleteEmployee: (Long) -> Unit,
     jsonUtil: JsonUtil
 ) : BaseSparkRestController<EmployeeDto, EmployeeView>(jsonUtil) {
 
@@ -30,26 +33,26 @@ class EmployeeRestSparkProxyController @Inject constructor(
 
     fun getEmployee() = Spark.get(
         GET_EMPLOYEE_ENDPOINT,
-        performGetViewEndpointLogic(DOMAIN_NAME) { employeeController.get(it) }
+        performGetViewEndpointLogic(DOMAIN_NAME) { getEmployee(it) }
     )
 
     fun getAllEmployees() = Spark.get(
         GET_ALL_EMPLOYEES_ENDPOINT,
-        performGetAllViewsEndpointLogic { employeeController.getAll() }
+        performGetAllViewsEndpointLogic { getAll() }
     )
 
     fun save() = Spark.post(
         SAVE_EMPLOYEE_ENDPOINT,
-        performUpsertEndpointLogic(EmployeeDto::class.java) { employeeController.save(it) }
+        performUpsertEndpointLogic(EmployeeDto::class.java) { saveEmployee(it) }
     )
 
     fun update() = Spark.put(
         UPDATE_EMPLOYEE_ENDPOINT,
-        performUpsertEndpointLogic(EmployeeDto::class.java) { employeeController.update(it) }
+        performUpsertEndpointLogic(EmployeeDto::class.java) { updateEmployee(it) }
     )
 
     fun delete() = Spark.delete(
         DELETE_EMPLOYEE_ENDPOINT,
-        performDeleteDomainEndpointLogic(DOMAIN_NAME) { employeeController.delete(it) }
+        performDeleteDomainEndpointLogic(DOMAIN_NAME) { deleteEmployee(it) }
     )
 }

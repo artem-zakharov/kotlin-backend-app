@@ -1,5 +1,6 @@
 package com.azakharov.employeeapp.rest.spark.proxy
 
+import com.azakharov.employeeapp.rest.spark.util.performJsonResponse
 import com.azakharov.employeeapp.rest.util.json.JsonUtil
 import com.azakharov.employeeapp.rest.view.ExceptionView
 import com.google.common.net.MediaType
@@ -68,10 +69,5 @@ abstract class BaseSparkRestController<DTO, V : Any>(
     private fun performPageNotFoundEndpointLogic() = Route { _: Request?, response: Response ->
         response.status(HttpStatus.NOT_FOUND_404)
         jsonUtil.write(ExceptionView(HttpStatus.NOT_FOUND_404, "Page not found"))
-    }
-
-    private fun Response.performJsonResponse(status: Int = HttpStatus.OK_200) = this.apply {
-        status(status)
-        type(MediaType.JSON_UTF_8.type())
     }
 }
