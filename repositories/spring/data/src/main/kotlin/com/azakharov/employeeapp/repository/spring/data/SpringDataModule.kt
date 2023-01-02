@@ -15,11 +15,25 @@ class SpringDataModule : AbstractModule() {
     }
 
     private fun bindSpringDataRepositories(beanFactory: ListableBeanFactory) {
-        beanFactory.getBean(EmployeePositionSpringDataRepository::class.java).let {
-            super.bind(EmployeePositionRepository::class.java).toInstance(EmployeePositionSpringDataProxyRepository(it))
+        beanFactory.getBean(EmployeePositionSpringDataRepository::class.java).apply {
+            EmployeePositionSpringDataProxyRepository(
+                findById = ::findById,
+                findAllPositions = ::findAll,
+                savePosition = ::save,
+                deleteById = ::deleteById
+            ).apply {
+                super.bind(EmployeePositionRepository::class.java).toInstance(this)
+            }
         }
-        beanFactory.getBean(EmployeeSpringDataRepository::class.java).let {
-            super.bind(EmployeeRepository::class.java).toInstance(EmployeeSpringDataProxyRepository(it))
+        beanFactory.getBean(EmployeeSpringDataRepository::class.java).apply {
+            EmployeeSpringDataProxyRepository(
+                findById = ::findById,
+                findAllEmployees = ::findAll,
+                saveEmployee = ::save,
+                deleteById = ::deleteById
+            ).apply {
+                super.bind(EmployeeRepository::class.java).toInstance(this)
+            }
         }
     }
 }
