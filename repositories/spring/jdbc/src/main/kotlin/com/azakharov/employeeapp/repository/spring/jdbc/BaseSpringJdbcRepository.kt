@@ -1,5 +1,6 @@
 package com.azakharov.employeeapp.repository.spring.jdbc
 
+import com.azakharov.employeeapp.repository.jpa.RepositoryException
 import org.slf4j.LoggerFactory
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.support.GeneratedKeyHolder
@@ -18,43 +19,44 @@ abstract class BaseSpringJdbcRepository<E, ID>(
         private const val ID_GENERATED_VALUE = "id"
     }
 
-    protected open fun find(sql: String, id: ID): E? = jdbcTemplate.queryForObject(sql, this::constructEntity, id)
+    protected open fun find(sql: String, id: ID): E? =
+        jdbcTemplate.queryForObject(sql, this::constructEntity, id)
 
-    protected open fun findAll(sql: String): List<E> = jdbcTemplate.query(sql, this::constructEntity)
+    protected open fun findAll(sql: String): List<E> =
+        jdbcTemplate.query(sql) { resultSet, row -> constructEntity(resultSet, row) }
 
-    protected open fun save(sql: String, entity: E): E {
-        val keyHolder = GeneratedKeyHolder()
-        jdbcTemplate.update(performPreparedStatementForSave(sql, entity), keyHolder)
+    protected open fun save(sql: String, entity: E): E =
+        GeneratedKeyHolder().let { keyHolder ->
+            jdbcTemplate.update(performPreparedStatementForSave(sql, entity), keyHolder)
 
-        val id = keyHolder.key?.toLong()
-        return if (id != null) constructSavedEntity(id, entity)
-        else throw SpringJdbcRepositoryException("Generated id after saving is null")
-    }
+            keyHolder.key?.toLong().let { id ->
+                id.takeIf { it != null }?.let {
+                    entity.constructSavedEntity(it)
+                } ?: throw SpringJdbcRepositoryException("Generated id after saving is null")
+            }
+        }
 
-    protected open fun update(sql: String, entity: E): E {
-        val params = convertEntityToParams(entity)
-        jdbcTemplate.update(sql, params)
-
-        return entity
-    }
+    protected open fun update(sql: String, entity: E): E =
+        entity.apply {
+            this.convertToParams().let { params ->
+                jdbcTemplate.update(sql, params)
+            }
+        }
 
     protected open fun delete(sql: String, id: ID) {
-        val affectedRows = jdbcTemplate.update(sql, id)
-        checkAffectedRow(affectedRows, id)
+        checkAffectedRow(jdbcTemplate.update(sql, id), id)
     }
 
     /**
      * Converts entity to list of parameters, that will be injected into SQL query.
      *
-     * @param entity database entity.
      * @return list of parameters.
      */
-    protected abstract fun convertEntityToParams(entity: E): List<Any?>
+    protected abstract fun E.convertToParams(): List<Any?>
 
     /**
      * Constructs entity from ResultSet after processing SQL query.
      *
-     * @param resultSet result of SQL query.
      * @return constructed entity.
      */
     protected abstract fun constructEntity(resultSet: ResultSet, rowNum: Int): E
@@ -63,17 +65,16 @@ abstract class BaseSpringJdbcRepository<E, ID>(
      * Constructs entity from generated database id and saved entity.
      *
      * @param id generated database id.
-     * @param saved entity, that was saved in database.
      * @return constructed entity with generated id.
      */
-    protected abstract fun constructSavedEntity(id: Long, saved: E): E
+    protected abstract fun E.constructSavedEntity(id: Long): E
 
-    private fun performPreparedStatementForSave(sql: String, entity: E): (connection: Connection) -> PreparedStatement = {
-        connection ->
-        val preparedStatement = connection.prepareStatement(sql, arrayOf(ID_GENERATED_VALUE))
-        setParams(preparedStatement, convertEntityToParams(entity))
-        preparedStatement
-    }
+    private fun performPreparedStatementForSave(sql: String, entity: E): (connection: Connection) -> PreparedStatement =
+        { connection ->
+            connection.prepareStatement(sql, arrayOf(ID_GENERATED_VALUE)).apply {
+                setParams(this, entity.convertToParams())
+            }
+        }
 
     private fun checkAffectedRow(affectedRows: Int, id: ID) {
         if (affectedRows == 0) throw SpringJdbcRepositoryException("There is no record with ID $id")
@@ -81,9 +82,8 @@ abstract class BaseSpringJdbcRepository<E, ID>(
 
     private fun setParams(preparedStatement: PreparedStatement, params: List<Any?>) {
         try {
-            for (index in params.indices) {
-                val sqlQueryIndex = index + 1
-                preparedStatement.setObject(sqlQueryIndex, params[index])
+            params.indices.forEach { index ->
+                (index + 1).let { sqlIndex -> preparedStatement.setObject(sqlIndex, params[sqlIndex]) }
             }
         } catch (e: SQLException) {
             LOGGER.error("Exception during setting params to JDBC prepared statement, message: ${e.message}")
@@ -92,3 +92,5 @@ abstract class BaseSpringJdbcRepository<E, ID>(
         }
     }
 }
+
+class SpringJdbcRepositoryException(message: String) : RepositoryException(message)
