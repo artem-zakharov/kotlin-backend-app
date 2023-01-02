@@ -7,8 +7,8 @@ import com.google.inject.Provides
 import com.google.inject.Singleton
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
-import javax.sql.DataSource
 import org.springframework.jdbc.core.JdbcTemplate
+import javax.sql.DataSource
 
 class SpringJdbcModule : AbstractModule() {
 
@@ -20,27 +20,19 @@ class SpringJdbcModule : AbstractModule() {
 
     @Provides
     @Singleton
-    fun provideHikariConfig(): HikariConfig? {
-        val hikariConfig = HikariConfig()
-
-        hikariConfig.jdbcUrl = ENV_DATASOURCE_URL
-        hikariConfig.username = ENV_DATASOURCE_USERNAME
-        hikariConfig.password = ENV_DATASOURCE_PASSWORD
-
-        return hikariConfig
+    fun provideHikariConfig(): HikariConfig = HikariConfig().apply {
+        jdbcUrl = ENV_DATASOURCE_URL
+        username = ENV_DATASOURCE_USERNAME
+        password = ENV_DATASOURCE_PASSWORD
     }
 
     @Provides
     @Singleton
-    fun dataSource(config: HikariConfig?): DataSource {
-        return HikariDataSource(config)
-    }
+    fun dataSource(config: HikariConfig?): DataSource = HikariDataSource(config)
 
     @Provides
     @Singleton
-    fun jdbcTemplate(dataSource: DataSource): JdbcTemplate {
-        return JdbcTemplate(dataSource)
-    }
+    fun jdbcTemplate(dataSource: DataSource): JdbcTemplate = JdbcTemplate(dataSource)
 
     override fun configure() {
         bindSpringJdbcRepositories()

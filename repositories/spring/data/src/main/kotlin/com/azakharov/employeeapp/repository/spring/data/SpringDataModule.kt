@@ -15,11 +15,11 @@ class SpringDataModule : AbstractModule() {
     }
 
     private fun bindSpringDataRepositories(beanFactory: ListableBeanFactory) {
-        val positionSpringDataRepository = beanFactory.getBean(EmployeePositionSpringDataRepository::class.java)
-        val employeeSpringDataRepository = beanFactory.getBean(EmployeeSpringDataRepository::class.java)
-        super.bind(EmployeePositionRepository::class.java)
-             .toInstance(EmployeePositionSpringDataProxyRepository(positionSpringDataRepository))
-        super.bind(EmployeeRepository::class.java)
-             .toInstance(EmployeeSpringDataProxyRepository(employeeSpringDataRepository))
+        beanFactory.getBean(EmployeePositionSpringDataRepository::class.java).let {
+            super.bind(EmployeePositionRepository::class.java).toInstance(EmployeePositionSpringDataProxyRepository(it))
+        }
+        beanFactory.getBean(EmployeeSpringDataRepository::class.java).let {
+            super.bind(EmployeeRepository::class.java).toInstance(EmployeeSpringDataProxyRepository(it))
+        }
     }
 }

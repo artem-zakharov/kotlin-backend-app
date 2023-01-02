@@ -38,7 +38,7 @@ class EmployeeSpringJdbcRepository @Inject constructor(
         private const val EMPLOYEE_POSITION_NAME_COLUMN = "p.name"
     }
 
-    override fun convertEntityToParams(entity: EmployeeEntity): List<Any?> {
+    override fun convertToParams(entity: EmployeeEntity): List<Any?> {
         val params = ArrayList<Any?>()
         params.add(entity.firstName)
         params.add(entity.surname)
